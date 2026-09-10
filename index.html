@@ -481,13 +481,13 @@ select option{background:var(--bg2)}
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,3,0) 55%,rgba(10,6,3,.55))"></div>
   <div style="position:absolute;top:17%;left:0;right:0;display:flex;flex-direction:column;align-items:center">
     <div class="splash-title" style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;letter-spacing:.5px">La Mia Biblioteca</div>
-    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V7</div>
+    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V10</div>
   </div>
 </div>
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v7</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v10</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -511,7 +511,7 @@ select option{background:var(--bg2)}
     <div style="display:flex;gap:8px"><input type="text" id="fIsbn" placeholder="es. 9788804668237" style="flex:1" inputmode="numeric">
     <button class="btn-s" onclick="openScanner()" style="white-space:nowrap">📊 Scan</button>
     <button class="btn-s" onclick="isbnLookup()" style="white-space:nowrap">🔎 Cerca</button></div>
-    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Compila titolo, autore e copertina da Open Library</div>
+    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Ricerca prima nel catalogo nazionale SBN, poi in Google Books e Open Library</div>
   </div>
   <div class="fg" style="margin-bottom:12px">
     <div style="display:flex;gap:8px">
@@ -583,7 +583,7 @@ select option{background:var(--bg2)}
     <button class="btn-s" style="flex:1" onclick="document.getElementById('importFile').click()">📥 Importa</button>
   </div>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v8</div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v10</div>
 </div>
 
 </main>
@@ -834,35 +834,46 @@ async function isbnLookup(){
   const isbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
   if(!isbn){showToast("⚠️ Inserisci un ISBN","var(--red)");return;}
   showToast("🔎 Cerco l'ISBN...","var(--accent2)");
-  // 1) Google Books (ottima copertura italiana)
-  try{
-    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn);
-    const d=await r.json();
-    if(d.totalItems>0&&d.items?.[0]?.volumeInfo){
-      const v=d.items[0].volumeInfo;
-      document.getElementById("fTitolo").value=v.title+(v.subtitle?". "+v.subtitle:"");
-      document.getElementById("fAutore").value=(v.authors||[]).join(", ");
-      const y=parseInt((v.publishedDate||"").slice(0,4));
-      if(y)document.getElementById("fAnno").value=y;
-      const img=v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail||null;
-      window._formCover=img?img.replace("http://","https://"):null;
-      showToast("✅ Trovato: "+v.title.substring(0,30));
-      return;
-    }
-  }catch(e){}
-  // 2) Open Library (riserva)
-  try{
-    const res=await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:"+isbn+"&format=json&jscmd=data");
-    const data=await res.json();
-    const book=data["ISBN:"+isbn];
-    if(!book){showToast("❌ ISBN non trovato nei database","var(--red)");return;}
-    document.getElementById("fTitolo").value=book.title||"";
-    document.getElementById("fAutore").value=(book.authors||[]).map(a=>a.name).join(", ");
-    const y=parseInt((book.publish_date||"").match(/\d{4}/)?.[0]);
+  const fill=(b)=>{
+    if(!b?.title)return false;
+    document.getElementById("fTitolo").value=b.title+(b.subtitle?". "+b.subtitle:"");
+    document.getElementById("fAutore").value=(b.authors||[]).join(", ");
+    const y=parseInt(String(b.date||"").match(/\d{4}/)?.[0]);
     if(y)document.getElementById("fAnno").value=y;
-    window._formCover=book.cover?.medium||book.cover?.small||null;
-    showToast("✅ Trovato: "+(book.title||"").substring(0,30));
-  }catch(e){showToast("❌ Errore di rete","var(--red)");}
+    window._formCover=b.cover?String(b.cover).replace("http://","https://"):null;
+    showToast("✅ Trovato: "+b.title.substring(0,30));
+    return true;
+  };
+  // 1) Catalogo ufficiale del Servizio Bibliotecario Nazionale, tramite Apps Script.
+  const cfg=getSyncCfg();
+  if(cfg.url){
+    try{
+      const r=await fetch(cfg.url+"?action=sbnIsbn&isbn="+encodeURIComponent(isbn)+"&pin="+encodeURIComponent(cfg.pin||""));
+      const d=await r.json();
+      if(d.ok&&d.result&&fill(d.result))return;
+    }catch(e){}
+  }
+  // Google Books: ricerca ISBN dedicata e, se non indicizzato così, ricerca libera del numero.
+  for(const query of ["isbn:"+isbn,'"'+isbn+'"']){
+    try{
+      const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults=5");
+      const d=await r.json();
+      const item=(d.items||[]).find(x=>x.volumeInfo?.title);
+      if(item){const v=item.volumeInfo;if(fill({title:v.title,subtitle:v.subtitle,authors:v.authors,date:v.publishedDate,cover:v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail}))return;}
+    }catch(e){}
+  }
+  // Open Library: prima scheda ISBN, poi indice di ricerca (più ampio).
+  try{
+    const r=await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(isbn)+"&format=json&jscmd=data");
+    const b=(await r.json())["ISBN:"+isbn];
+    if(b&&fill({title:b.title,authors:(b.authors||[]).map(a=>a.name),date:b.publish_date,cover:b.cover?.large||b.cover?.medium||b.cover?.small}))return;
+  }catch(e){}
+  try{
+    const r=await fetch("https://openlibrary.org/search.json?isbn="+encodeURIComponent(isbn)+"&limit=5&fields=title,author_name,first_publish_year,cover_i");
+    const d=await r.json(),b=(d.docs||[]).find(x=>x.title);
+    if(b&&fill({title:b.title,authors:b.author_name,date:b.first_publish_year,cover:b.cover_i?"https://covers.openlibrary.org/b/id/"+b.cover_i+"-L.jpg":null}))return;
+  }catch(e){}
+  showToast("⚠️ ISBN letto, ma scheda non presente: inserisci titolo e autore","var(--yellow)");
 }
 function onBarcode(code){
   document.getElementById("fIsbn").value=code;
