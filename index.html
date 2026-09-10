@@ -583,7 +583,7 @@ select option{background:var(--bg2)}
     <button class="btn-s" style="flex:1" onclick="document.getElementById('importFile').click()">📥 Importa</button>
   </div>
   <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v7</div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v8</div>
 </div>
 
 </main>
@@ -615,6 +615,7 @@ select option{background:var(--bg2)}
   <div class="modal" style="padding-bottom:18px"><div class="modal-handle"></div>
     <div style="font-weight:700;margin-bottom:10px;color:var(--accent2)">📊 Inquadra il codice a barre</div>
     <video id="scanVideo" playsinline muted style="width:100%;border-radius:12px;background:#000;aspect-ratio:3/4;object-fit:cover"></video>
+    <div id="scanStatus" style="margin-top:9px;text-align:center;font-size:.82rem;color:var(--text2)">Avvio fotocamera...</div>
     <button class="btn-s" style="width:100%;margin-top:10px" onclick="closeScanner()">✕ Chiudi</button>
   </div>
 </div>
@@ -870,25 +871,47 @@ function onBarcode(code){
 }
 
 // ── SCANNER BARCODE ──
-let _scanStream=null,_scanTimer=null;
+let _scanStream=null,_scanFrame=null,_scanBusy=false;
 async function openScanner(){
-  if(!("BarcodeDetector" in window)){showToast("⚠️ Scanner non supportato qui: aggiorna Chrome","var(--red)");return;}
+  if(!("BarcodeDetector" in window)){showToast("⚠️ Scanner non supportato: usa Chrome aggiornato","var(--red)");return;}
   document.getElementById("scanModal").classList.add("open");
+  const status=document.getElementById("scanStatus");
+  status.textContent="Avvio fotocamera...";
   try{
-    const det=new BarcodeDetector({formats:["ean_13","ean_8","upc_a"]});
-    _scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
+    const supported=await BarcodeDetector.getSupportedFormats();
+    const wanted=["ean_13","ean_8","upc_a","upc_e","code_128","code_39","codabar","itf","data_matrix","qr_code"];
+    const formats=supported.filter(f=>wanted.includes(f));
+    if(!formats.length)throw new Error("nessun formato barcode supportato");
+    const det=new BarcodeDetector({formats});
+    _scanStream=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}
+    });
     const v=document.getElementById("scanVideo");v.srcObject=_scanStream;await v.play();
-    _scanTimer=setInterval(async()=>{
+    status.textContent="🔍 Pronto — inquadra l'ISBN";
+    _scanBusy=false;
+    const detect=async()=>{
+      if(!_scanStream)return;
+      if(_scanBusy){_scanFrame=requestAnimationFrame(detect);return;}
+      _scanBusy=true;
       try{
         const codes=await det.detect(v);
-        if(codes.length&&codes[0].rawValue){const c=codes[0].rawValue;closeScanner();onBarcode(c);}
+        if(codes.length&&codes[0].rawValue){
+          const c=codes[0].rawValue.replace(/\D/g,"");
+          if(navigator.vibrate)navigator.vibrate(100);
+          status.textContent="✅ ISBN letto: "+c;
+          closeScanner();onBarcode(c);return;
+        }
       }catch(e){}
-    },350);
+      finally{_scanBusy=false;}
+      if(_scanStream)_scanFrame=requestAnimationFrame(detect);
+    };
+    _scanFrame=requestAnimationFrame(detect);
   }catch(e){closeScanner();showToast("❌ Fotocamera non accessibile: "+e.message,"var(--red)");}
 }
 function closeScanner(){
-  clearInterval(_scanTimer);_scanTimer=null;
+  if(_scanFrame)cancelAnimationFrame(_scanFrame);_scanFrame=null;_scanBusy=false;
   if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}
+  const v=document.getElementById("scanVideo");if(v)v.srcObject=null;
   document.getElementById("scanModal").classList.remove("open");
 }
 
