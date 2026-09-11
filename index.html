@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f0e8">
 <title>La Mia Biblioteca</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -485,13 +490,13 @@ select option{background:var(--bg2)}
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,3,0) 55%,rgba(10,6,3,.55))"></div>
   <div style="position:absolute;top:17%;left:0;right:0;display:flex;flex-direction:column;align-items:center">
     <div class="splash-title" style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;letter-spacing:.5px">La Mia Biblioteca</div>
-    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V11</div>
+    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V12</div>
   </div>
 </div>
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v11</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v12</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -575,7 +580,7 @@ select option{background:var(--bg2)}
   <div class="stg-body"><div class="fg"><label class="flabel">🔑 API Key Gemini</label><input type="password" id="geminiKeyInput" placeholder="Per il riconoscimento copertine"></div><button class="btn-s" style="margin-top:10px" onclick="saveGeminiKey()">💾 Salva chiave</button></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🗂️ Dati e backup</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div style="display:flex;gap:9px"><button class="btn-s" style="flex:1" onclick="exportData()">📤 Esporta</button><button class="btn-s" style="flex:1" onclick="document.getElementById('importFile').click()">📥 Importa</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v11</div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v12</div>
 </div>
 
 </main>
@@ -1143,6 +1148,9 @@ function setTheme(name){
 }
 
 // ── INIT ──
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+}
 load();buildSelects();clearForm();renderHome();
 (function(){const c=getSyncCfg();if(c.auto&&c.url&&c.pin)setTimeout(()=>syncDownload(false),1200);})();
 setTimeout(()=>{const s=document.getElementById("splash");s.style.opacity="0";setTimeout(()=>s.remove(),600);},1700);
