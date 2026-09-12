@@ -13,6 +13,9 @@ function doGet(e) {
     if (action === 'sbnIsbn') {
       return jsonOut_({ ok: true, result: cercaSbnIsbn_(e.parameter.isbn) });
     }
+    if (action === 'bookPlot') {
+      return jsonOut_({ ok: true, result: cercaTrama_(e.parameter.isbn, e.parameter.title, e.parameter.author) });
+    }
     if (action !== 'load') return jsonOut_({ ok: false, error: 'Azione non valida' });
 
     var file = findFile_();
@@ -80,6 +83,66 @@ function cercaSbnIsbn_(value) {
 function normalizzaAutore_(name) {
   var parts = String(name || '').split(',').map(function(x) { return x.trim(); }).filter(String);
   return parts.length === 2 ? parts[1] + ' ' + parts[0] : parts.join(' ');
+}
+
+function cercaTrama_(isbnValue, titleValue, authorValue) {
+  var isbn = String(isbnValue || '').replace(/[^0-9Xx]/g, '');
+  var title = String(titleValue || '').trim();
+  var author = String(authorValue || '').trim();
+  if (!isbn && !title) throw new Error('ISBN o titolo mancante');
+  var candidates = [];
+  var queries = [];
+  if (isbn) queries.push('isbn:' + isbn);
+  if (title) {
+    queries.push('intitle:' + title + (author ? ' inauthor:' + author : ''));
+    queries.push(title + (author ? ' ' + author : ''));
+  }
+  queries.forEach(function(query) {
+    try {
+      var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=20&printType=books';
+      var response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (response.getResponseCode() !== 200) return;
+      var data = JSON.parse(response.getContentText());
+      (data.items || []).forEach(function(item) {
+        var text = pulisciTrama_(item && item.volumeInfo && item.volumeInfo.description);
+        if (text) candidates.push({ text: text, source: 'Google Books' });
+      });
+    } catch (err) {}
+  });
+  try {
+    var olUrl = isbn
+      ? 'https://openlibrary.org/search.json?isbn=' + encodeURIComponent(isbn) + '&limit=10&fields=key,title'
+      : 'https://openlibrary.org/search.json?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(author) + '&limit=10&fields=key,title';
+    var olResponse = UrlFetchApp.fetch(olUrl, { muteHttpExceptions: true });
+    if (olResponse.getResponseCode() === 200) {
+      var olData = JSON.parse(olResponse.getContentText());
+      (olData.docs || []).slice(0, 6).forEach(function(doc) {
+        if (!doc.key) return;
+        try {
+          var workResponse = UrlFetchApp.fetch('https://openlibrary.org' + doc.key + '.json', { muteHttpExceptions: true });
+          if (workResponse.getResponseCode() !== 200) return;
+          var work = JSON.parse(workResponse.getContentText());
+          var text = pulisciTrama_(work.description);
+          if (text) candidates.push({ text: text, source: 'Open Library' });
+        } catch (err) {}
+      });
+    }
+  } catch (err) {}
+  candidates.sort(function(a, b) { return b.text.length - a.text.length; });
+  return candidates.length ? candidates[0] : null;
+}
+
+function pulisciTrama_(value) {
+  var raw = value && typeof value === 'object' ? value.value : value;
+  return String(raw || '')
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function checkPin_(pin) {
