@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f5f0e8">
-<title>La Mia Biblioteca v13.2</title>
+<title>La Mia Biblioteca v13.3</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -496,13 +496,13 @@ select option{background:var(--bg2)}
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,3,0) 55%,rgba(10,6,3,.55))"></div>
   <div style="position:absolute;top:17%;left:0;right:0;display:flex;flex-direction:column;align-items:center">
     <div class="splash-title" style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;letter-spacing:.5px">La Mia Biblioteca</div>
-    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V13.2</div>
+    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V13.3</div>
   </div>
 </div>
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v13.2</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v13.3</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -596,7 +596,7 @@ select option{background:var(--bg2)}
   <div class="stg-body"><div class="fg"><label class="flabel">🔑 API Key Gemini</label><input type="password" id="geminiKeyInput" placeholder="Per il riconoscimento copertine"></div><button class="btn-s" style="margin-top:10px" onclick="saveGeminiKey()">💾 Salva chiave</button></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🗂️ Dati e backup</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><button class="btn-s" onclick="exportData()">📤 Backup JSON</button><button class="btn-s" onclick="document.getElementById('importFile').click()">📥 Importa JSON</button><button class="btn-s" style="grid-column:1/-1" onclick="exportCsv()">📊 Esporta catalogo CSV</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v13.2</div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v13.3</div>
 </div>
 
 </main>
@@ -885,7 +885,7 @@ async function isbnLookup(skipDuplicate){
     if(y)document.getElementById("fAnno").value=y;
     window._formCover=b.cover?String(b.cover).replace("http://","https://"):null;
     if(b.description){document.getElementById("fTrama").value=cleanPlot(b.description);document.getElementById("tramaSource").textContent="Fonte: "+(b.source||"Internet");}
-    else setTimeout(()=>searchPlot(true),0);
+    setTimeout(()=>searchPlot(true),0);
     showToast("✅ Trovato: "+b.title.substring(0,30));
     return true;
   };
@@ -939,7 +939,9 @@ async function searchPlot(silent){
       if(d.ok&&d.result?.text){
         const text=cleanPlot(d.result.text);document.getElementById("fTrama").value=text;
         document.getElementById("tramaSource").textContent="Fonte: "+(d.result.source||"Internet");
-        if(!silent)showToast("✅ Trama trovata ("+text.length+" caratteri)");return;
+        const ai=await improvePlotWithAI(titolo,autore,text,d.result.source||"Internet");
+        if(ai){document.getElementById("fTrama").value=ai;document.getElementById("tramaSource").textContent="Fonte: Gemini · rielaborata da "+(d.result.source||"Internet");}
+        if(!silent)showToast("✅ Trama pronta ("+document.getElementById("fTrama").value.length+" caratteri)");return;
       }
     }catch(e){}
   }
@@ -959,8 +961,31 @@ async function searchPlot(silent){
   }catch(e){}
   candidates.sort((a,b)=>b.text.length-a.text.length);
   const best=candidates[0];
-  if(best){document.getElementById("fTrama").value=best.text;document.getElementById("tramaSource").textContent="Fonte: "+best.source;if(!silent)showToast("✅ Trama trovata ("+best.text.length+" caratteri)");}
-  else if(!silent)showToast("⚠️ Trama non disponibile nei database","var(--yellow)");
+  if(best){
+    const ai=await improvePlotWithAI(titolo,autore,best.text,best.source);
+    const finalText=ai||best.text;document.getElementById("fTrama").value=finalText;
+    document.getElementById("tramaSource").textContent=ai?"Fonte: Gemini · rielaborata da "+best.source:"Fonte: "+best.source;
+    if(!silent)showToast("✅ Trama pronta ("+finalText.length+" caratteri)");
+  }else{
+    const ai=await improvePlotWithAI(titolo,autore,"","");
+    if(ai){document.getElementById("fTrama").value=ai;document.getElementById("tramaSource").textContent="Fonte: Gemini AI";if(!silent)showToast("✅ Trama creata con Gemini");}
+    else if(!silent)showToast(localStorage.getItem("gemini_api_key")?"⚠️ Trama non disponibile":"⚠️ Nessuna trama trovata. Configura Gemini nelle Impostazioni","var(--yellow)");
+  }
+}
+async function improvePlotWithAI(title,author,sourceText,sourceName){
+  const key=localStorage.getItem("gemini_api_key")||"";if(!key||!title)return null;
+  const base=sourceText
+    ?"Usa esclusivamente come base queste informazioni provenienti da "+sourceName+":\n"+sourceText
+    :"Se conosci con sicurezza questo libro, usa le tue conoscenze. Se titolo e autore non permettono di identificarlo senza dubbi, rispondi esattamente TRAMA_NON_DISPONIBILE.";
+  const prompt=`Scrivi in italiano una trama informativa del libro "${title}"${author?` di ${author}`:""}. ${base}
+La trama deve essere compresa indicativamente tra 1200 e 1800 caratteri, raccontare ambientazione, protagonisti e avvio dello sviluppo narrativo, avere tono neutro e scorrevole, non sembrare una pubblicità, non contenere giudizi, inviti all'acquisto o citazioni promozionali e non rivelare il finale o colpi di scena decisivi. Non aggiungere titolo, intestazioni, fonti, commenti o formule introduttive. Restituisci soltanto la trama.`;
+  try{
+    const pixel="iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+X8i2AAAAAElFTkSuQmCC";
+    const res=await fetch(getProxyUrl(),{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({key,prompt,image:{mime:"image/png",data:pixel}})});
+    if(!res.ok)return null;const data=await res.json();if(data.error)return null;
+    const out=(data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join(" ").replace(/```[a-z]*|```/gi,"").trim();
+    if(!out||out.includes("TRAMA_NON_DISPONIBILE"))return null;return cleanPlot(out);
+  }catch(e){return null;}
 }
 function onBarcode(code){
   document.getElementById("fIsbn").value=code;
