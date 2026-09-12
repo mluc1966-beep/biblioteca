@@ -109,12 +109,13 @@ function cercaTrama_(isbnValue, titleValue, authorValue) {
       });
     } catch (err) {}
   });
-  try {
-    var olUrl = isbn
-      ? 'https://openlibrary.org/search.json?isbn=' + encodeURIComponent(isbn) + '&limit=10&fields=key,title'
-      : 'https://openlibrary.org/search.json?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(author) + '&limit=10&fields=key,title';
-    var olResponse = UrlFetchApp.fetch(olUrl, { muteHttpExceptions: true });
-    if (olResponse.getResponseCode() === 200) {
+  var olUrls = [];
+  if (isbn) olUrls.push('https://openlibrary.org/search.json?isbn=' + encodeURIComponent(isbn) + '&limit=10&fields=key,title');
+  if (title) olUrls.push('https://openlibrary.org/search.json?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(author) + '&limit=10&fields=key,title');
+  olUrls.forEach(function(olUrl) {
+    try {
+      var olResponse = UrlFetchApp.fetch(olUrl, { muteHttpExceptions: true });
+      if (olResponse.getResponseCode() !== 200) return;
       var olData = JSON.parse(olResponse.getContentText());
       (olData.docs || []).slice(0, 6).forEach(function(doc) {
         if (!doc.key) return;
@@ -126,10 +127,50 @@ function cercaTrama_(isbnValue, titleValue, authorValue) {
           if (text) candidates.push({ text: text, source: 'Open Library' });
         } catch (err) {}
       });
-    }
-  } catch (err) {}
+    } catch (err) {}
+  });
+  if (title) {
+    try {
+      var wikiQuery = title + (author ? ' ' + author : '') + ' libro';
+      var wikiUrl = 'https://it.wikipedia.org/w/api.php?action=query&generator=search&gsrnamespace=0&gsrlimit=6&gsrsearch=' + encodeURIComponent(wikiQuery) + '&prop=extracts&exintro=1&explaintext=1&exsentences=10&format=json&formatversion=2';
+      var wikiResponse = UrlFetchApp.fetch(wikiUrl, {
+        muteHttpExceptions: true,
+        headers: { 'User-Agent': 'LaMiaBiblioteca/13.2 (uso personale)' }
+      });
+      if (wikiResponse.getResponseCode() === 200) {
+        var wikiData = JSON.parse(wikiResponse.getContentText());
+        var pages = wikiData && wikiData.query && wikiData.query.pages || [];
+        var wantedTitle = title.toLowerCase().split(':')[0].trim();
+        pages.sort(function(a, b) {
+          function score(page) {
+            var pageTitle = String(page.title || '').toLowerCase();
+            var extract = String(page.extract || '').toLowerCase();
+            var value = 0;
+            if (pageTitle === wantedTitle) value += 100;
+            else if (pageTitle.indexOf(wantedTitle) >= 0 || wantedTitle.indexOf(pageTitle) >= 0) value += 50;
+            if (/\bromanzo\b|\blibro\b|\bopera\b/.test(extract)) value += 20;
+            if (author && pageTitle === author.toLowerCase()) value -= 80;
+            return value;
+          }
+          return score(b) - score(a);
+        });
+        pages.slice(0, 1).forEach(function(page) {
+          var text = pulisciTrama_(page.extract);
+          if (text && text.length >= 180) candidates.push({ text: limitaTrama_(text, 1800), source: 'Wikipedia italiana' });
+        });
+      }
+    } catch (err) {}
+  }
   candidates.sort(function(a, b) { return b.text.length - a.text.length; });
   return candidates.length ? candidates[0] : null;
+}
+
+function limitaTrama_(text, maxLength) {
+  text = String(text || '').trim();
+  if (text.length <= maxLength) return text;
+  var cut = text.substring(0, maxLength);
+  var end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+  return (end > 500 ? cut.substring(0, end + 1) : cut + '…').trim();
 }
 
 function pulisciTrama_(value) {
