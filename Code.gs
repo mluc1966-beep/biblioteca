@@ -13,9 +13,6 @@ function doGet(e) {
     if (action === 'sbnIsbn') {
       return jsonOut_({ ok: true, result: cercaSbnIsbn_(e.parameter.isbn) });
     }
-    if (action === 'bookPlot') {
-      return jsonOut_({ ok: true, result: cercaTrama_(e.parameter.isbn, e.parameter.title, e.parameter.author) });
-    }
     if (action !== 'load') return jsonOut_({ ok: false, error: 'Azione non valida' });
 
     var file = findFile_();
@@ -31,6 +28,9 @@ function doPost(e) {
   try {
     var body = JSON.parse(e.postData.contents);
     if (!checkPin_(body.pin)) return jsonOut_({ ok: false, error: 'PIN errato' });
+    if (body.action === 'aiPlot') {
+      return jsonOut_({ ok: true, result: creaTramaGoogle_(body) });
+    }
     if (!body.data) return jsonOut_({ ok: false, error: 'Dati mancanti' });
     var ts = body.ts || Date.now();
     var payload = JSON.stringify({ ts: ts, data: body.data });
@@ -85,105 +85,39 @@ function normalizzaAutore_(name) {
   return parts.length === 2 ? parts[1] + ' ' + parts[0] : parts.join(' ');
 }
 
-function cercaTrama_(isbnValue, titleValue, authorValue) {
-  var isbn = String(isbnValue || '').replace(/[^0-9Xx]/g, '');
-  var title = String(titleValue || '').trim();
-  var author = String(authorValue || '').trim();
-  if (!isbn && !title) throw new Error('ISBN o titolo mancante');
-  var candidates = [];
-  var queries = [];
-  if (isbn) queries.push('isbn:' + isbn);
-  if (title) {
-    queries.push('intitle:' + title + (author ? ' inauthor:' + author : ''));
-    queries.push(title + (author ? ' ' + author : ''));
-  }
-  queries.forEach(function(query) {
-    try {
-      var url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=20&printType=books';
-      var response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-      if (response.getResponseCode() !== 200) return;
-      var data = JSON.parse(response.getContentText());
-      (data.items || []).forEach(function(item) {
-        var text = pulisciTrama_(item && item.volumeInfo && item.volumeInfo.description);
-        if (text) candidates.push({ text: text, source: 'Google Books' });
-      });
-    } catch (err) {}
+function creaTramaGoogle_(body) {
+  var key = String(body.key || '').trim();
+  var title = String(body.title || '').trim();
+  var author = String(body.author || '').trim();
+  var isbn = String(body.isbn || '').replace(/[^0-9Xx]/g, '');
+  if (!key) throw new Error('Chiave Gemini mancante');
+  if (!title) throw new Error('Titolo mancante');
+  var prompt = 'Cerca con Google informazioni sul LIBRO indicato e scrivi esclusivamente la sua trama in italiano.\n' +
+    'Titolo: ' + title + '\nAutore: ' + author + '\nISBN: ' + isbn + '\n\n' +
+    'Verifica che titolo, autore e ISBN si riferiscano alla stessa opera. Ignora completamente film, serie TV, adattamenti, recensioni, quarte di copertina promozionali e significati del titolo come parola comune. ' +
+    'Scrivi una trama narrativa neutra tra 700 e 1100 caratteri: ambientazione, protagonisti e sviluppo iniziale. Non esprimere giudizi, non analizzare temi o stile, non usare frasi pubblicitarie e non rivelare finale o colpi di scena decisivi. ' +
+    'Se Google non consente di identificare con certezza quel preciso libro, rispondi soltanto TRAMA_NON_TROVATA. Non aggiungere titolo, fonti o introduzioni.';
+  var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key);
+  var payload = {
+    contents: [{ role: 'user', parts: [{ text: prompt }] }],
+    tools: [{ google_search: {} }],
+    generationConfig: { temperature: 0.15, maxOutputTokens: 700 }
+  };
+  var response = UrlFetchApp.fetch(apiUrl, {
+    method: 'post',
+    contentType: 'application/json',
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true
   });
-  var olUrls = [];
-  if (isbn) olUrls.push('https://openlibrary.org/search.json?isbn=' + encodeURIComponent(isbn) + '&limit=10&fields=key,title');
-  if (title) olUrls.push('https://openlibrary.org/search.json?title=' + encodeURIComponent(title) + '&author=' + encodeURIComponent(author) + '&limit=10&fields=key,title');
-  olUrls.forEach(function(olUrl) {
-    try {
-      var olResponse = UrlFetchApp.fetch(olUrl, { muteHttpExceptions: true });
-      if (olResponse.getResponseCode() !== 200) return;
-      var olData = JSON.parse(olResponse.getContentText());
-      (olData.docs || []).slice(0, 6).forEach(function(doc) {
-        if (!doc.key) return;
-        try {
-          var workResponse = UrlFetchApp.fetch('https://openlibrary.org' + doc.key + '.json', { muteHttpExceptions: true });
-          if (workResponse.getResponseCode() !== 200) return;
-          var work = JSON.parse(workResponse.getContentText());
-          var text = pulisciTrama_(work.description);
-          if (text) candidates.push({ text: text, source: 'Open Library' });
-        } catch (err) {}
-      });
-    } catch (err) {}
-  });
-  if (title) {
-    try {
-      var wikiQuery = title + (author ? ' ' + author : '') + ' libro';
-      var wikiUrl = 'https://it.wikipedia.org/w/api.php?action=query&generator=search&gsrnamespace=0&gsrlimit=6&gsrsearch=' + encodeURIComponent(wikiQuery) + '&prop=extracts&exintro=1&explaintext=1&exsentences=10&format=json&formatversion=2';
-      var wikiResponse = UrlFetchApp.fetch(wikiUrl, {
-        muteHttpExceptions: true,
-        headers: { 'User-Agent': 'LaMiaBiblioteca/13.2 (uso personale)' }
-      });
-      if (wikiResponse.getResponseCode() === 200) {
-        var wikiData = JSON.parse(wikiResponse.getContentText());
-        var pages = wikiData && wikiData.query && wikiData.query.pages || [];
-        var wantedTitle = title.toLowerCase().split(':')[0].trim();
-        pages.sort(function(a, b) {
-          function score(page) {
-            var pageTitle = String(page.title || '').toLowerCase();
-            var extract = String(page.extract || '').toLowerCase();
-            var value = 0;
-            if (pageTitle === wantedTitle) value += 100;
-            else if (pageTitle.indexOf(wantedTitle) >= 0 || wantedTitle.indexOf(pageTitle) >= 0) value += 50;
-            if (/\bromanzo\b|\blibro\b|\bopera\b/.test(extract)) value += 20;
-            if (author && pageTitle === author.toLowerCase()) value -= 80;
-            return value;
-          }
-          return score(b) - score(a);
-        });
-        pages.slice(0, 1).forEach(function(page) {
-          var text = pulisciTrama_(page.extract);
-          if (text && text.length >= 180) candidates.push({ text: limitaTrama_(text, 1800), source: 'Wikipedia italiana' });
-        });
-      }
-    } catch (err) {}
+  if (response.getResponseCode() !== 200) {
+    var detail = response.getContentText().substring(0, 500);
+    throw new Error('Gemini non disponibile (' + response.getResponseCode() + '): ' + detail);
   }
-  candidates.sort(function(a, b) { return b.text.length - a.text.length; });
-  return candidates.length ? candidates[0] : null;
-}
-
-function limitaTrama_(text, maxLength) {
-  text = String(text || '').trim();
-  if (text.length <= maxLength) return text;
-  var cut = text.substring(0, maxLength);
-  var end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
-  return (end > 500 ? cut.substring(0, end + 1) : cut + '…').trim();
-}
-
-function pulisciTrama_(value) {
-  var raw = value && typeof value === 'object' ? value.value : value;
-  return String(raw || '')
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;|&apos;/gi, "'")
-    .replace(/\s+/g, ' ')
-    .trim();
+  var data = JSON.parse(response.getContentText());
+  var parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts || [];
+  var text = parts.map(function(part) { return String(part.text || ''); }).join(' ').replace(/\s+/g, ' ').trim();
+  if (!text || text.indexOf('TRAMA_NON_TROVATA') >= 0) return null;
+  return { text: text, source: 'Gemini con Ricerca Google' };
 }
 
 function checkPin_(pin) {
