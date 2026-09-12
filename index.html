@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f5f0e8">
-<title>La Mia Biblioteca</title>
+<title>La Mia Biblioteca v13</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -149,6 +149,12 @@ select option{background:var(--bg2)}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:6px 13px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:.78rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
 .chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.filter-panel{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:11px;margin-bottom:12px}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.switch-row{display:flex;align-items:center;gap:9px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:.8rem}
+.switch-row input{width:18px;height:18px;flex:none}
+.plot-box{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;line-height:1.5;font-size:.84rem;white-space:pre-line}
+.source-tag{display:inline-block;margin-top:6px;border-radius:20px;background:var(--bg3);color:var(--text2);padding:3px 9px;font-size:.68rem}
 
 /* ── SEARCH ── */
 .srch-row{display:flex;gap:8px;margin-bottom:14px}
@@ -490,13 +496,13 @@ select option{background:var(--bg2)}
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,3,0) 55%,rgba(10,6,3,.55))"></div>
   <div style="position:absolute;top:17%;left:0;right:0;display:flex;flex-direction:column;align-items:center">
     <div class="splash-title" style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;letter-spacing:.5px">La Mia Biblioteca</div>
-    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V12</div>
+    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V13</div>
   </div>
 </div>
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v12</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v13</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -508,7 +514,14 @@ select option{background:var(--bg2)}
 </div>
 
 <div class="section" id="sec-libri">
-  <input type="text" id="libSearch" placeholder="🔍 Cerca per titolo o autore..." oninput="renderLibri()" style="width:100%;margin-bottom:10px">
+  <div style="display:flex;gap:8px;margin-bottom:10px"><input type="text" id="libSearch" placeholder="🔍 Titolo, autore, ISBN o posizione..." oninput="renderLibri()"><button class="btn-s" onclick="toggleAdvancedFilters()" style="padding:10px 13px" aria-label="Filtri avanzati">☰</button></div>
+  <div id="advancedFilters" class="filter-panel" hidden>
+    <div class="flabel" style="margin-bottom:7px">Ricerca e ordinamento avanzati</div>
+    <div class="filter-grid">
+      <select id="libSort" onchange="renderLibri()"><option value="titolo">Titolo A–Z</option><option value="autore">Autore A–Z</option><option value="recenti">Ultimi inseriti</option><option value="anno">Anno più recente</option><option value="voto">Voto più alto</option><option value="posizione">Posizione</option></select>
+      <select id="libPlace" onchange="renderLibri()"><option value="">Tutte le posizioni</option></select>
+    </div>
+  </div>
   <div id="libGenChips" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:4px"></div>
   <div id="libStatoChips" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px"></div>
   <div id="libList"></div>
@@ -522,6 +535,7 @@ select option{background:var(--bg2)}
     <button class="btn-s" onclick="isbnLookup()" style="white-space:nowrap">🔎 Cerca</button></div>
     <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Ricerca prima nel catalogo nazionale SBN, poi in Google Books e Open Library</div>
   </div>
+  <div class="switch-row"><input type="checkbox" id="multiScan"><label for="multiScan"><strong>Scansione multipla</strong><br><span style="color:var(--text3)">Dopo il salvataggio riapre la fotocamera</span></label></div>
   <div class="fg" style="margin-bottom:12px">
     <div style="display:flex;gap:8px">
       <label for="coverPhotoCam" class="btn-s" style="flex:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer">📷 Fotocamera</label>
@@ -543,6 +557,8 @@ select option{background:var(--bg2)}
   </div>
   <div class="fg" style="margin-bottom:12px"><label class="flabel">👤 Già letto da</label><div id="fLettori" style="display:flex;gap:7px;flex-wrap:wrap"></div></div>
   <div class="fg" style="margin-bottom:12px"><label class="flabel">📍 Dove si trova?</label><div id="locPicker" class="loc-picker"></div></div>
+  <div class="switch-row" style="margin-top:-5px;margin-bottom:12px"><input type="checkbox" id="keepLocation"><label for="keepLocation"><strong>Mantieni questa posizione</strong><br><span style="color:var(--text3)">Usala per i prossimi libri della scansione multipla</span></label></div>
+  <div class="fg" style="margin-bottom:12px"><label class="flabel">📜 Trama</label><textarea id="fTrama" rows="7" placeholder="Viene cercata automaticamente insieme ai dati del libro"></textarea><div><span class="source-tag" id="tramaSource">Fonte: non disponibile</span> <button class="btn-sm" type="button" onclick="searchPlot()">🔄 Cerca trama</button></div></div>
   <div class="fg" style="margin-bottom:16px"><label class="flabel">📝 Note</label><input type="text" id="fNote" placeholder="es. regalo di Anna"></div>
   <button class="btn-p" onclick="saveBook()">💾 Salva Libro</button>
 </div>
@@ -579,8 +595,8 @@ select option{background:var(--bg2)}
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🤖 Intelligenza artificiale</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div class="fg"><label class="flabel">🔑 API Key Gemini</label><input type="password" id="geminiKeyInput" placeholder="Per il riconoscimento copertine"></div><button class="btn-s" style="margin-top:10px" onclick="saveGeminiKey()">💾 Salva chiave</button></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🗂️ Dati e backup</span><span class="stg-arr">›</span></div>
-  <div class="stg-body"><div style="display:flex;gap:9px"><button class="btn-s" style="flex:1" onclick="exportData()">📤 Esporta</button><button class="btn-s" style="flex:1" onclick="document.getElementById('importFile').click()">📥 Importa</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v12</div>
+  <div class="stg-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><button class="btn-s" onclick="exportData()">📤 Backup JSON</button><button class="btn-s" onclick="document.getElementById('importFile').click()">📥 Importa JSON</button><button class="btn-s" style="grid-column:1/-1" onclick="exportCsv()">📊 Esporta catalogo CSV</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v13</div>
 </div>
 
 </main>
@@ -634,7 +650,7 @@ select option{background:var(--bg2)}
 <script>
 // ── STATE ──
 const GENERI={"Romanzo":"📕","Giallo/Thriller":"🔪","Fantasy":"🐉","Fantascienza":"🚀","Saggio":"🧠","Biografia":"👤","Storia":"🏛️","Arte":"🎨","Cucina":"🍳","Bambini/Ragazzi":"🧒","Poesia":"✒️","Fumetti":"💬","Altro":"📚"};
-const STATI={daleggere:{l:"Da leggere",e:"🔖"},inlettura:{l:"In lettura",e:"📖"},letto:{l:"Letto",e:"✅"}};
+const STATI={daleggere:{l:"Da leggere",e:"🔖"},inlettura:{l:"In lettura",e:"📖"},letto:{l:"Letto",e:"✅"},desideri:{l:"Desideri",e:"💝"}};
 let books=[],settings=null,currentBookId=null,locPickerLuogo=null,locPickerRipiano=null;
 let confirmCallback=null,renameLuogoIdx=null,libGenFilter=null,libStatoFilter=null,libLettoreFilter=null,loanBookId=null,formVoto=0,formLettoDa=[];
 
@@ -675,13 +691,20 @@ function goTo(s){
   if(s==="prestiti")renderPrestiti();
   if(s==="impostazioni"){collapseSettings();renderStgLuoghi();renderStgLettori();fillSyncForm();renderThemeSelection();}
 }
+function toggleAdvancedFilters(){const p=document.getElementById("advancedFilters");p.hidden=!p.hidden;if(!p.hidden)fillPlaceFilter();}
+function fillPlaceFilter(){
+  const p=document.getElementById("libPlace"),selected=p.value;p.innerHTML='<option value="">Tutte le posizioni</option>';
+  settings.luoghi.forEach(l=>p.add(new Option((l.stanza?l.stanza+" · ":"")+l.nome,l.id)));
+  p.value=selected;
+}
 
 // ── HOME ──
 function renderHome(){
   const tot=books.length,letti=books.filter(b=>b.stato==="letto").length;
   const dale=books.filter(b=>b.stato==="daleggere").length,prest=books.filter(b=>b.prestito).length;
+  const reading=books.filter(b=>b.stato==="inlettura").length,des=books.filter(b=>b.stato==="desideri").length;
   const stat=(n,l,e)=>`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px">${e}</div><div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--accent2)">${n}</div><div style="font-size:.72rem;color:var(--text2)">${l}</div></div>`;
-  document.getElementById("homeStats").innerHTML=stat(tot,"Libri totali","📚")+stat(letti,"Letti","✅")+stat(dale,"Da leggere","🔖")+stat(prest,"In prestito","🤝");
+  document.getElementById("homeStats").innerHTML=stat(tot,"Libri totali","📚")+stat(letti,"Letti","✅")+stat(reading,"In lettura","📖")+stat(dale,"Da leggere","🔖")+stat(des,"Desideri","💝")+stat(prest,"In prestito","🤝");
   const rec=[...books].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).slice(0,5);
   document.getElementById("homeRecent").innerHTML=rec.length?rec.map(bookCardHtml).join(""):'<div class="empty"><div class="empty-ico">📚</div><p>Nessun libro ancora.<br>Tocca ➕ per aggiungere il primo!</p></div>';
 }
@@ -711,8 +734,10 @@ function renderLibri(){
   document.getElementById("libGenChips").innerHTML=`<div class="chip${!libGenFilter?" on":""}" onclick="libGenFilter=null;renderLibri()">Tutti</div>`+gens.map(g=>`<div class="chip${libGenFilter===g?" on":""}" onclick="libGenFilter='${esc(g)}';renderLibri()">${GENERI[g]||"📚"} ${esc(g)}</div>`).join("");
   document.getElementById("libStatoChips").innerHTML=`<div class="chip${!libStatoFilter?" on":""}" onclick="libStatoFilter=null;renderLibri()">Ogni stato</div>`+Object.entries(STATI).map(([k,s])=>`<div class="chip${libStatoFilter===k?" on":""}" onclick="libStatoFilter='${k}';renderLibri()">${s.e} ${s.l}</div>`).join("")+(settings.lettori||[]).map(n=>`<div class="chip${libLettoreFilter===n?" on":""}" onclick="libLettoreFilter=libLettoreFilter==='${esc(n)}'?null:'${esc(n)}';renderLibri()">👤 ${esc(n)}</div>`).join("");
   const q=(document.getElementById("libSearch").value||"").toLowerCase().trim();
-  let list=books.filter(b=>(!q||b.titolo.toLowerCase().includes(q)||(b.autore||"").toLowerCase().includes(q))&&(!libGenFilter||b.genere===libGenFilter)&&(!libStatoFilter||b.stato===libStatoFilter)&&(!libLettoreFilter||(b.lettoDa||[]).includes(libLettoreFilter)));
-  list.sort((a,b)=>a.titolo.localeCompare(b.titolo));
+  const loc=document.getElementById("libPlace")?.value||"";
+  let list=books.filter(b=>(!q||[b.titolo,b.autore,b.isbn,b.luogoNome,b.ripiano].some(v=>(v||"").toLowerCase().includes(q)))&&(!loc||b.luogoId===loc)&&(!libGenFilter||b.genere===libGenFilter)&&(!libStatoFilter||b.stato===libStatoFilter)&&(!libLettoreFilter||(b.lettoDa||[]).includes(libLettoreFilter)));
+  const sort=document.getElementById("libSort")?.value||"titolo";
+  list.sort((a,b)=>sort==="autore"?(a.autore||"").localeCompare(b.autore||""):sort==="recenti"?(b.addedAt||0)-(a.addedAt||0):sort==="anno"?(b.anno||0)-(a.anno||0):sort==="voto"?(b.voto||0)-(a.voto||0):sort==="posizione"?((a.luogoNome||"")+(a.ripiano||"")).localeCompare((b.luogoNome||"")+(b.ripiano||"")):a.titolo.localeCompare(b.titolo));
   document.getElementById("libList").innerHTML=list.length?list.map(bookCardHtml).join(""):'<div class="empty"><div class="empty-ico">🔍</div><p>Nessun libro trovato.</p></div>';
 }
 
@@ -733,6 +758,7 @@ function openBook(id){
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px"><div style="font-size:.68rem;color:var(--text3)">Stato</div>${st.e} ${st.l}</div>
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">👤 Letto da</div>${(b.lettoDa||[]).length?b.lettoDa.map(esc).join(", "):"Nessuno"}</div>
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">Posizione</div>${b.luogoNome?esc(b.luogoNome)+(b.ripiano?" · "+esc(b.ripiano):""):"—"}</div>
+      ${b.trama?`<div class="plot-box" style="grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3);margin-bottom:4px">📜 TRAMA</div>${esc(b.trama)}<br><span class="source-tag">Fonte: ${esc(b.tramaFonte||"manuale")}</span></div>`:""}
       ${b.note?`<div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">Note</div>${esc(b.note)}</div>`:""}
       ${b.prestito?`<div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1;border:1px solid var(--yellow)"><div style="font-size:.68rem;color:var(--text3)">🤝 In prestito a</div><strong>${esc(b.prestito.a)}</strong> dal ${new Date(b.prestito.dal).toLocaleDateString("it-IT")}</div>`:""}
     </div>
@@ -791,11 +817,13 @@ function toggleFLettore(n){
 function renderVotoStars(){
   document.getElementById("fVotoStars").innerHTML=[1,2,3,4,5].map(i=>`<span class="${formVoto>=i?"on":""}" onclick="formVoto=${i}===formVoto?0:${i};renderVotoStars()" style="color:var(--yellow)">★</span>`).join("");
 }
-function clearForm(){
+function clearForm(keepLoc){
+  const oldLoc=locPickerLuogo,oldShelf=locPickerRipiano;
   currentBookId=null;formVoto=0;formLettoDa=[];window._formCover=null;
-  ["fIsbn","fTitolo","fAutore","fAnno","fNote"].forEach(id=>document.getElementById(id).value="");
+  ["fIsbn","fTitolo","fAutore","fAnno","fNote","fTrama"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("tramaSource").textContent="Fonte: non disponibile";
   document.getElementById("fGenere").value="Romanzo";document.getElementById("fStato").value="daleggere";
-  locPickerLuogo=null;locPickerRipiano=null;
+  locPickerLuogo=keepLoc?oldLoc:null;locPickerRipiano=keepLoc?oldShelf:null;
   renderLocPicker();renderVotoStars();renderFLettori();
   document.getElementById("formTitle").textContent="✨ Aggiungi Libro";
 }
@@ -806,32 +834,48 @@ function editBook(){
   document.getElementById("fAutore").value=b.autore||"";document.getElementById("fGenere").value=b.genere||"Altro";
   document.getElementById("fAnno").value=b.anno||"";document.getElementById("fStato").value=b.stato||"daleggere";
   document.getElementById("fNote").value=b.note||"";formVoto=b.voto||0;formLettoDa=[...(b.lettoDa||[])];window._formCover=b.cover||null;
+  document.getElementById("fTrama").value=b.trama||"";document.getElementById("tramaSource").textContent="Fonte: "+(b.tramaFonte||"manuale");
   locPickerLuogo=b.luogoId;locPickerRipiano=b.ripiano;
   renderLocPicker();renderVotoStars();renderFLettori();
   document.getElementById("formTitle").textContent="✏️ Modifica Libro";
   goTo("add");document.getElementById("nav-add").classList.add("on");
 }
-function saveBook(){
+function saveBook(forceDuplicate){
   const titolo=document.getElementById("fTitolo").value.trim();
   if(!titolo){showToast("⚠️ Inserisci il titolo","var(--red)");return;}
+  const cleanIsbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
+  const duplicate=!currentBookId&&cleanIsbn&&books.find(x=>String(x.isbn||"").replace(/[^0-9Xx]/g,"")===cleanIsbn);
+  if(duplicate&&!forceDuplicate){
+    const where=duplicate.luogoNome?(duplicate.luogoNome+(duplicate.ripiano?" · "+duplicate.ripiano:"")):"posizione non indicata";
+    askConfirm("Questo libro è già presente: “"+duplicate.titolo+"”. Si trova in "+where+". Vuoi registrare una seconda copia?",()=>saveBook(true));return;
+  }
   const luogo=settings.luoghi.find(l=>l.id===locPickerLuogo)||null;
   const b={titolo,autore:document.getElementById("fAutore").value.trim(),
     genere:document.getElementById("fGenere").value,anno:parseInt(document.getElementById("fAnno").value)||null,
     stato:document.getElementById("fStato").value,voto:formVoto,isbn:document.getElementById("fIsbn").value.trim(),
     cover:window._formCover||null,lettoDa:[...formLettoDa],luogoId:luogo?.id||null,luogoNome:luogo?.nome||null,
-    ripiano:locPickerRipiano||null,note:document.getElementById("fNote").value.trim()};
+    ripiano:locPickerRipiano||null,note:document.getElementById("fNote").value.trim(),
+    trama:document.getElementById("fTrama").value.trim(),tramaFonte:document.getElementById("tramaSource").textContent.replace("Fonte: ","")};
   if(currentBookId){
     const idx=books.findIndex(x=>x.id===currentBookId);
     if(idx>=0)books[idx]={...books[idx],...b};
     currentBookId=null;
   }else{books.unshift({id:genId(),addedAt:Date.now(),prestito:null,...b});}
-  saveB();showToast("✅ Libro salvato!");clearForm();goTo("home");
+  saveB();showToast("✅ Libro salvato!");
+  const again=document.getElementById("multiScan").checked,keep=document.getElementById("keepLocation").checked;
+  clearForm(again&&keep);
+  if(again){goTo("add");setTimeout(openScanner,350);}else goTo("home");
 }
 
 // ── ISBN LOOKUP ──
-async function isbnLookup(){
+async function isbnLookup(skipDuplicate){
   const isbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
   if(!isbn){showToast("⚠️ Inserisci un ISBN","var(--red)");return;}
+  const duplicate=!currentBookId&&books.find(x=>String(x.isbn||"").replace(/[^0-9Xx]/g,"")===isbn);
+  if(duplicate&&!skipDuplicate){
+    const where=duplicate.luogoNome?(duplicate.luogoNome+(duplicate.ripiano?" · "+duplicate.ripiano:"")):"posizione non indicata";
+    askConfirm("COPIA GIÀ PRESENTE: “"+duplicate.titolo+"”. Posizione: "+where+". Vuoi continuare per registrare una seconda copia?",()=>isbnLookup(true));return;
+  }
   showToast("🔎 Cerco l'ISBN...","var(--accent2)");
   const fill=(b)=>{
     if(!b?.title)return false;
@@ -840,6 +884,8 @@ async function isbnLookup(){
     const y=parseInt(String(b.date||"").match(/\d{4}/)?.[0]);
     if(y)document.getElementById("fAnno").value=y;
     window._formCover=b.cover?String(b.cover).replace("http://","https://"):null;
+    if(b.description){document.getElementById("fTrama").value=cleanPlot(b.description);document.getElementById("tramaSource").textContent="Fonte: "+(b.source||"Internet");}
+    else setTimeout(()=>searchPlot(true),0);
     showToast("✅ Trovato: "+b.title.substring(0,30));
     return true;
   };
@@ -858,7 +904,7 @@ async function isbnLookup(){
       const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults=5");
       const d=await r.json();
       const item=(d.items||[]).find(x=>x.volumeInfo?.title);
-      if(item){const v=item.volumeInfo;if(fill({title:v.title,subtitle:v.subtitle,authors:v.authors,date:v.publishedDate,cover:v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail}))return;}
+      if(item){const v=item.volumeInfo;if(fill({title:v.title,subtitle:v.subtitle,authors:v.authors,date:v.publishedDate,cover:v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail,description:v.description,source:"Google Books"}))return;}
     }catch(e){}
   }
   // Open Library: prima scheda ISBN, poi indice di ricerca (più ampio).
@@ -873,6 +919,36 @@ async function isbnLookup(){
     if(b&&fill({title:b.title,authors:b.author_name,date:b.first_publish_year,cover:b.cover_i?"https://covers.openlibrary.org/b/id/"+b.cover_i+"-L.jpg":null}))return;
   }catch(e){}
   showToast("⚠️ ISBN letto, ma scheda non presente: inserisci titolo e autore","var(--yellow)");
+}
+function cleanPlot(value){
+  const raw=typeof value==="object"?(value.value||""):String(value||"");
+  const el=document.createElement("div");el.innerHTML=raw;
+  return (el.textContent||"").replace(/\s+/g," ").trim();
+}
+async function searchPlot(silent){
+  const isbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
+  const titolo=document.getElementById("fTitolo").value.trim(),autore=document.getElementById("fAutore").value.trim();
+  if(!isbn&&!titolo){if(!silent)showToast("⚠️ Inserisci prima ISBN o titolo","var(--yellow)");return;}
+  if(!silent)showToast("📜 Cerco una trama completa...","var(--accent2)");
+  const candidates=[];
+  try{
+    const q=isbn?"isbn:"+isbn:("intitle:"+titolo+(autore?" inauthor:"+autore:""));
+    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=10");
+    const d=await r.json();
+    (d.items||[]).forEach(x=>{const t=cleanPlot(x.volumeInfo?.description);if(t)candidates.push({text:t,source:"Google Books"});});
+  }catch(e){}
+  try{
+    const url=isbn?"https://openlibrary.org/search.json?isbn="+encodeURIComponent(isbn)+"&limit=8&fields=key,title":"https://openlibrary.org/search.json?title="+encodeURIComponent(titolo)+"&author="+encodeURIComponent(autore)+"&limit=8&fields=key,title";
+    const r=await fetch(url),d=await r.json();
+    for(const doc of (d.docs||[]).slice(0,4)){
+      if(!doc.key)continue;
+      try{const wr=await fetch("https://openlibrary.org"+doc.key+".json"),w=await wr.json();const t=cleanPlot(w.description);if(t)candidates.push({text:t,source:"Open Library"});}catch(e){}
+    }
+  }catch(e){}
+  candidates.sort((a,b)=>b.text.length-a.text.length);
+  const best=candidates[0];
+  if(best){document.getElementById("fTrama").value=best.text;document.getElementById("tramaSource").textContent="Fonte: "+best.source;if(!silent)showToast("✅ Trama trovata ("+best.text.length+" caratteri)");}
+  else if(!silent)showToast("⚠️ Trama non disponibile nei database","var(--yellow)");
 }
 function onBarcode(code){
   document.getElementById("fIsbn").value=code;
@@ -995,6 +1071,13 @@ function exportData(){
   const a=document.createElement("a");a.href=URL.createObjectURL(blob);
   a.download="biblioteca_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();
   showToast("📤 Backup scaricato!");
+}
+function exportCsv(){
+  const cols=["Titolo","Autore","ISBN","Anno","Genere","Stato","Voto","Libreria","Scaffale","Letto da","In prestito a","Trama","Fonte trama","Note"];
+  const quote=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const rows=books.map(b=>[b.titolo,b.autore,b.isbn,b.anno,b.genere,STATI[b.stato]?.l||b.stato,b.voto,b.luogoNome,b.ripiano,(b.lettoDa||[]).join(", "),b.prestito?.a||"",b.trama,b.tramaFonte,b.note].map(quote).join(";"));
+  const blob=new Blob(["\ufeff"+cols.map(quote).join(";")+"\n"+rows.join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="catalogo_biblioteca_"+new Date().toISOString().slice(0,10)+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast("📊 Catalogo CSV scaricato!");
 }
 function importData(input){
   const file=input.files[0];if(!file)return;

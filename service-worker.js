@@ -1,4 +1,4 @@
-const CACHE_NAME="biblioteca-v12";
+const CACHE_NAME="biblioteca-v13";
 const APP_SHELL=[
   "./",
   "./index.html",
