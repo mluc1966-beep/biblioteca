@@ -95,13 +95,17 @@ function creaTramaGoogle_(body) {
   var prompt = 'Cerca con Google informazioni sul LIBRO indicato e scrivi esclusivamente la sua trama in italiano.\n' +
     'Titolo: ' + title + '\nAutore: ' + author + '\nISBN: ' + isbn + '\n\n' +
     'Verifica che titolo, autore e ISBN si riferiscano alla stessa opera. Ignora completamente film, serie TV, adattamenti, recensioni, quarte di copertina promozionali e significati del titolo come parola comune. ' +
-    'Scrivi una trama narrativa neutra tra 700 e 1100 caratteri: ambientazione, protagonisti e sviluppo iniziale. Non esprimere giudizi, non analizzare temi o stile, non usare frasi pubblicitarie e non rivelare finale o colpi di scena decisivi. ' +
+    'Scrivi una trama narrativa neutra e completa, indicativamente tra 1200 e 2500 caratteri e comunque non oltre 3000: ambientazione, protagonisti e sviluppo della vicenda. Non esprimere giudizi, non analizzare temi o stile, non usare frasi pubblicitarie e non rivelare il finale o colpi di scena decisivi. ' +
     'Se Google non consente di identificare con certezza quel preciso libro, rispondi soltanto TRAMA_NON_TROVATA. Non aggiungere titolo, fonti o introduzioni.';
   var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key);
   var payload = {
     contents: [{ role: 'user', parts: [{ text: prompt }] }],
     tools: [{ google_search: {} }],
-    generationConfig: { temperature: 0.15, maxOutputTokens: 700 }
+    generationConfig: {
+      temperature: 0.15,
+      maxOutputTokens: 2048,
+      thinkingConfig: { thinkingBudget: 0 }
+    }
   };
   var response = UrlFetchApp.fetch(apiUrl, {
     method: 'post',
@@ -114,8 +118,12 @@ function creaTramaGoogle_(body) {
     throw new Error('Gemini non disponibile (' + response.getResponseCode() + '): ' + detail);
   }
   var data = JSON.parse(response.getContentText());
-  var parts = data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts || [];
+  var candidate = data && data.candidates && data.candidates[0];
+  var parts = candidate && candidate.content && candidate.content.parts || [];
   var text = parts.map(function(part) { return String(part.text || ''); }).join(' ').replace(/\s+/g, ' ').trim();
+  if (candidate && candidate.finishReason === 'MAX_TOKENS') {
+    throw new Error('Risposta Gemini interrotta: limite token raggiunto');
+  }
   if (!text || text.indexOf('TRAMA_NON_TROVATA') >= 0) return null;
   return { text: text, source: 'Gemini con Ricerca Google' };
 }
