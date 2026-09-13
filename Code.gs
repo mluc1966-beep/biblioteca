@@ -89,12 +89,12 @@ function creaTramaGoogle_(body) {
   var key = String(body.key || '').trim();
   var title = String(body.title || '').trim();
   var author = String(body.author || '').trim();
-  var isbn = String(body.isbn || '').replace(/[^0-9Xx]/g, '');
   if (!key) throw new Error('Chiave Gemini mancante');
   if (!title) throw new Error('Titolo mancante');
+  if (!author) throw new Error('Autore mancante');
   var prompt = 'Cerca con Google informazioni sul LIBRO indicato e scrivi esclusivamente la sua trama in italiano.\n' +
-    'Titolo: ' + title + '\nAutore: ' + author + '\nISBN: ' + isbn + '\n\n' +
-    'Verifica che titolo, autore e ISBN si riferiscano alla stessa opera. Ignora completamente film, serie TV, adattamenti, recensioni, quarte di copertina promozionali e significati del titolo come parola comune. ' +
+    'Titolo: ' + title + '\nAutore: ' + author + '\n\n' +
+    'Verifica che titolo e autore si riferiscano alla stessa opera. Non usare né cercare codici ISBN o dati della specifica edizione. Ignora completamente film, serie TV, adattamenti, recensioni, quarte di copertina promozionali e significati del titolo come parola comune. ' +
     'Scrivi una trama narrativa neutra e completa, indicativamente tra 1200 e 2500 caratteri e comunque non oltre 3000: ambientazione, protagonisti e sviluppo della vicenda. Non esprimere giudizi, non analizzare temi o stile, non usare frasi pubblicitarie e non rivelare il finale o colpi di scena decisivi. ' +
     'Se Google non consente di identificare con certezza quel preciso libro, rispondi soltanto TRAMA_NON_TROVATA. Non aggiungere titolo, fonti o introduzioni.';
   var apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + encodeURIComponent(key);
