@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#f5f0e8">
-<title>La Mia Biblioteca v16</title>
+<title>La Mia Biblioteca v17</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -436,6 +436,10 @@ select option{background:var(--bg2)}
 .genre-picker-row:last-child{border-bottom:none}.genre-picker-row .genre-cover{width:30px;height:40px;font-size:15px}
 .genre-select-btn{width:100%;min-height:42px;display:flex;align-items:center;gap:9px;text-align:left;padding:6px 10px}
 .genre-select-btn .genre-cover,#genreLegend .genre-cover{width:24px;height:32px;font-size:12px;border-radius:3px 6px 6px 3px;box-shadow:inset 3px 0 rgba(0,0,0,.16)}
+.stat-bar-row{display:grid;grid-template-columns:minmax(90px,1fr) 2fr 32px;gap:8px;align-items:center;margin:7px 0;font-size:.76rem;cursor:pointer}
+.stat-bar-track{height:10px;background:var(--bg3);border-radius:6px;overflow:hidden}.stat-bar-fill{height:100%;border-radius:6px;background:var(--accent)}
+.maint-row{display:grid;grid-template-columns:minmax(90px,1fr) 1.4fr auto;gap:6px;align-items:center;margin-bottom:7px}.maint-row input{padding:7px 9px;font-size:.8rem}.maint-row .btn-sm{padding:7px 9px}
+.inventory-line{font-size:.77rem;padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:7px;align-items:center}.inventory-line:last-child{border-bottom:none}
 .today-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
 .stato-badge{font-size:.68rem;padding:2px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);white-space:nowrap}
 .stars{display:flex;gap:3px;font-size:1.25rem;cursor:pointer;user-select:none}
@@ -517,7 +521,7 @@ select option{background:var(--bg2)}
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v16</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v17</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -616,13 +620,23 @@ select option{background:var(--bg2)}
   <div class="stg-body"><div id="stgLuoghi" style="margin-bottom:14px"></div><div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" id="newLuogoNome" placeholder="es. 📚 Libreria grande"><button class="btn-s" onclick="addLuogo()">＋</button></div><input type="text" id="newLuogoStanza" placeholder="🏠 Stanza (facoltativa)"></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>👤 Lettori</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div id="stgLettori" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div><div style="display:flex;gap:8px"><input type="text" id="newLettore" placeholder="es. Daniela"><button class="btn-s" onclick="addLettore()">＋</button></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderStats()"><span>📊 Statistiche</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div id="statsPanel"></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderInventorySetup()"><span>📦 Inventario libreria</span><span class="stg-arr">›</span></div>
+  <div class="stg-body">
+    <div class="filter-grid" style="margin-bottom:9px"><select id="inventoryLuogo" onchange="renderInventoryShelves()"></select><select id="inventoryRipiano"></select></div>
+    <button class="btn-p" onclick="startInventory()">📊 Avvia scansione inventario</button>
+    <div id="inventoryResults" style="margin-top:10px"></div>
+  </div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderAuthorMaintenance()"><span>✍️ Uniforma autori</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div style="font-size:.73rem;color:var(--text3);margin-bottom:9px">Modifica un nome e applicalo a tutti i libri che usano esattamente quella forma. Nessuna unione è automatica.</div><div id="authorMaintenance"></div></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>☁️ Sincronizzazione</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div class="fg" style="margin-bottom:10px"><label class="flabel">🔗 URL script</label><input type="text" id="syncUrlInput" placeholder="https://script.google.com/macros/s/.../exec"></div><div class="fg" style="margin-bottom:10px"><label class="flabel">🔑 PIN</label><input type="password" id="syncPinInput" placeholder="PIN impostato nello script"></div><label style="display:flex;gap:10px;align-items:center;margin-bottom:12px"><input type="checkbox" id="syncAutoInput" style="width:18px"> Sincronizzazione automatica</label><button class="btn-p" onclick="saveSyncSettings()">💾 Salva configurazione</button><div id="syncLastInfo"></div></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🤖 Intelligenza artificiale</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div class="fg"><label class="flabel">🔑 API Key Gemini</label><input type="password" id="geminiKeyInput" placeholder="Usata esclusivamente per cercare le trame"></div><button class="btn-s" style="margin-top:10px" onclick="saveGeminiKey()">💾 Salva chiave</button></div>
   <div class="stg-hdr" onclick="toggleSetting(this)"><span>🗂️ Dati e backup</span><span class="stg-arr">›</span></div>
   <div class="stg-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><button class="btn-s" onclick="exportData()">📤 Backup JSON</button><button class="btn-s" onclick="document.getElementById('importFile').click()">📥 Importa JSON</button><button class="btn-s" style="grid-column:1/-1" onclick="exportCsv()">📊 Esporta catalogo CSV</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v16</div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v17</div>
 </div>
 
 </main>
@@ -655,7 +669,7 @@ select option{background:var(--bg2)}
     <div style="font-weight:700;margin-bottom:10px;color:var(--accent2)">📊 Inquadra il codice a barre</div>
     <video id="scanVideo" playsinline muted style="width:100%;border-radius:12px;background:#000;aspect-ratio:3/4;object-fit:cover"></video>
     <div id="scanStatus" style="margin-top:9px;text-align:center;font-size:.82rem;color:var(--text2)">Avvio fotocamera...</div>
-    <button class="btn-s" style="width:100%;margin-top:10px" onclick="closeScanner()">✕ Chiudi</button>
+    <button class="btn-s" id="scanCloseBtn" style="width:100%;margin-top:10px" onclick="closeScanner()">✕ Chiudi</button>
   </div>
 </div>
 
@@ -744,7 +758,7 @@ function goTo(s){
   if(s==="home")renderHome();
   if(s==="libri")renderLibri();
   if(s==="prestiti")renderPrestiti();
-  if(s==="impostazioni"){collapseSettings();renderStgLuoghi();renderStgLettori();fillSyncForm();renderThemeSelection();}
+  if(s==="impostazioni"){collapseSettings();renderStgLuoghi();renderStgLettori();fillSyncForm();renderThemeSelection();renderInventorySetup();}
 }
 function toggleAdvancedFilters(){const p=document.getElementById("advancedFilters");p.hidden=!p.hidden;if(!p.hidden)fillPlaceFilter();}
 function toggleCatalog(header){const body=document.getElementById("catalogBody"),open=!body.hidden;body.hidden=open;header.classList.toggle("open",!open);header.querySelector(".stg-arr")?.classList.toggle("open",!open);}
@@ -1154,6 +1168,62 @@ async function searchPlot(silent){
     if(!silent)showToast("✅ Trama trovata ("+text.length+" caratteri)");
   }catch(e){if(!silent)showToast("❌ Ricerca trama fallita: "+e.message,"var(--red)");}
 }
+
+// ── STATISTICHE ──
+let _statsPlaces=[];
+function renderStats(){
+  const p=document.getElementById("statsPanel");if(!p)return;
+  const count=k=>books.filter(k).length,total=books.length;
+  const now=Date.now(),year=new Date().getFullYear(),rated=books.filter(b=>Number(b.voto)>0),avg=rated.length?(rated.reduce((s,b)=>s+Number(b.voto),0)/rated.length).toFixed(1):'—';
+  const summary=[['📚 Totali',total],['✅ Letti',count(b=>b.stato==='letto')],['🔖 Da leggere',count(b=>b.stato==='daleggere')],['📖 In lettura',count(b=>b.stato==='inlettura')],['🤝 In prestito',count(b=>b.prestito)],['⭐ Voto medio',avg],['🆕 Ultimi 30 giorni',count(b=>b.addedAt&&now-b.addedAt<=2592000000)],['📅 Aggiunti nel '+year,count(b=>b.addedAt&&new Date(b.addedAt).getFullYear()===year)],['📜 Senza trama',count(b=>!b.trama)],['📍 Senza posizione',count(b=>!b.luogoId)],['🔢 Senza ISBN',count(b=>!b.isbn)],['❔ Da classificare',count(b=>!b.genere||b.genere==='Da classificare')]];
+  const byGenre={};books.forEach(b=>byGenre[b.genere||'Da classificare']=(byGenre[b.genere||'Da classificare']||0)+1);
+  const maxG=Math.max(1,...Object.values(byGenre));
+  const byAuthor={};books.forEach(b=>{if(b.autore)byAuthor[b.autore]=(byAuthor[b.autore]||0)+1;});
+  const topAuthors=Object.entries(byAuthor).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'it')).slice(0,10),maxA=Math.max(1,...topAuthors.map(x=>x[1]));
+  const byPlace={};books.forEach(b=>{const x=b.luogoNome||'Senza posizione';byPlace[x]=(byPlace[x]||0)+1;});_statsPlaces=Object.entries(byPlace).sort((a,b)=>b[1]-a[1]);const maxP=Math.max(1,...Object.values(byPlace));
+  p.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:13px">${summary.map(x=>`<div class="card2" style="padding:9px"><strong>${x[1]}</strong><div style="font-size:.7rem;color:var(--text2)">${x[0]}</div></div>`).join('')}</div>
+    <div class="flabel">Libri per categoria</div>${Object.entries(byGenre).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<div class="stat-bar-row" onclick="openGenreBooks('${esc(g)}')"><span>${esc(g)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxG*100}%;background:${GENERE_COLORI[g]||GENERE_COLORI.Altro}"></div></div><strong>${n}</strong></div>`).join('')||'<div class="empty">Nessun dato</div>'}
+    <div class="flabel" style="margin-top:14px">Autori più presenti</div>${topAuthors.map(([a,n])=>`<div class="stat-bar-row"><span>${esc(a)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxA*100}%"></div></div><strong>${n}</strong></div>`).join('')||'<div class="empty">Nessun autore</div>'}
+    <div class="flabel" style="margin-top:14px">Distribuzione per libreria</div>${_statsPlaces.map(([a,n],i)=>`<div class="stat-bar-row" onclick="openPlaceBooks(${i})"><span>${esc(a)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxP*100}%"></div></div><strong>${n}</strong></div>`).join('')}`;
+}
+function openGenreBooks(g){libGenFilter=g;goTo('libri');document.getElementById('catalogBody').hidden=false;}
+function openPlaceBooks(i){const name=_statsPlaces[i]?.[0];if(!name)return;goTo('libri');document.getElementById('catalogBody').hidden=false;document.getElementById('libSearch').value=name==='Senza posizione'?'':name;renderLibri();}
+
+// ── UNIFORMA AUTORI ──
+let _authorRows=[];
+function renderAuthorMaintenance(){
+  const p=document.getElementById('authorMaintenance');if(!p)return;const counts={};books.forEach(b=>{const a=(b.autore||'').trim();if(a)counts[a]=(counts[a]||0)+1;});
+  _authorRows=Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0],'it'));
+  p.innerHTML=_authorRows.length?_authorRows.map(([a,n],i)=>`<div class="maint-row"><div style="font-size:.76rem;overflow:hidden;text-overflow:ellipsis" title="${esc(a)}">${esc(a)} <span style="color:var(--text3)">(${n})</span></div><input id="authorFix${i}" value="${esc(a)}"><button class="btn-sm" onclick="renameAuthor(${i})">Applica</button></div>`).join(''):'<div class="empty">Nessun autore presente.</div>';
+}
+function renameAuthor(i){const old=_authorRows[i]?.[0],val=document.getElementById('authorFix'+i).value.trim();if(!old||!val||val===old)return;const n=books.filter(b=>b.autore===old).length;askConfirm(`Sostituire “${old}” con “${val}” in ${n} libr${n===1?'o':'i'}?`,()=>{books.forEach(b=>{if(b.autore===old)b.autore=val;});saveB();renderAuthorMaintenance();refreshView();showToast('✅ Autore uniformato');});}
+
+// ── INVENTARIO ──
+let inventoryTarget=null,inventoryScanned=new Map(),inventoryActive=false;
+function renderInventorySetup(){
+  const l=document.getElementById('inventoryLuogo');if(!l)return;const old=l.value;l.innerHTML='<option value="">Scegli libreria</option>'+settings.luoghi.map(x=>`<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join('');if(settings.luoghi.some(x=>x.id===old))l.value=old;renderInventoryShelves();
+}
+function renderInventoryShelves(){const id=document.getElementById('inventoryLuogo')?.value,r=document.getElementById('inventoryRipiano'),old=r?.value,l=settings.luoghi.find(x=>x.id===id);if(!r)return;r.innerHTML='<option value="">Tutta la libreria</option>'+((l&&l.ripiani)||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if((l?.ripiani||[]).includes(old))r.value=old;}
+function startInventory(){
+  const luogoId=document.getElementById('inventoryLuogo').value,ripiano=document.getElementById('inventoryRipiano').value,luogo=settings.luoghi.find(x=>x.id===luogoId);
+  if(!luogo){showToast('⚠️ Scegli prima una libreria','var(--red)');return;}
+  inventoryTarget={luogoId,luogoNome:luogo.nome,ripiano};inventoryScanned=new Map();inventoryActive=true;renderInventoryResults(false);openScanner('inventory');
+}
+function handleInventoryBarcode(code){
+  if(inventoryScanned.has(code))return;const matches=books.filter(b=>String(b.isbn||'').replace(/[^0-9Xx]/g,'')===code),book=matches[0]||null;
+  let type='unknown';if(book)type=book.luogoId===inventoryTarget.luogoId&&(!inventoryTarget.ripiano||book.ripiano===inventoryTarget.ripiano)?'correct':'wrong';
+  inventoryScanned.set(code,{code,book,type});renderInventoryResults(false);
+  document.getElementById('scanStatus').textContent=book?(type==='correct'?'✅ '+book.titolo:'⚠️ Altra posizione: '+book.titolo):'➕ ISBN non presente: '+code;
+}
+function inventoryExpected(){return books.filter(b=>b.luogoId===inventoryTarget?.luogoId&&(!inventoryTarget?.ripiano||b.ripiano===inventoryTarget.ripiano));}
+function renderInventoryResults(finished){
+  const p=document.getElementById('inventoryResults');if(!p||!inventoryTarget)return;const vals=[...inventoryScanned.values()],correct=vals.filter(x=>x.type==='correct'),wrong=vals.filter(x=>x.type==='wrong'),unknown=vals.filter(x=>x.type==='unknown'),seenIds=new Set(vals.filter(x=>x.book).map(x=>x.book.id)),expected=inventoryExpected(),unscannable=expected.filter(b=>!String(b.isbn||'').replace(/[^0-9Xx]/g,'')),missing=expected.filter(b=>String(b.isbn||'').replace(/[^0-9Xx]/g,'')&&!seenIds.has(b.id));
+  p.innerHTML=`<div class="card2" style="padding:9px;margin-bottom:8px"><strong>${finished?'Inventario terminato':'Scansione in corso'}</strong><div style="font-size:.73rem;color:var(--text2)">${esc(inventoryTarget.luogoNome)}${inventoryTarget.ripiano?' · '+esc(inventoryTarget.ripiano):''}</div><div style="font-size:.75rem;margin-top:5px">✅ ${correct.length} corretti · ⚠️ ${wrong.length} fuori posto · ➕ ${unknown.length} non registrati${finished?' · ❓ '+missing.length+' non trovati · 🔢 '+unscannable.length+' senza ISBN':''}</div></div>`+
+    wrong.map(x=>`<div class="inventory-line"><span style="flex:1">⚠️ ${esc(x.book.titolo)} <small>(${esc(x.book.luogoNome||'senza posizione')})</small></span><button class="btn-sm" onclick="moveInventoryBook('${x.book.id}')">Sposta qui</button></div>`).join('')+
+    unknown.map(x=>`<div class="inventory-line">➕ ISBN ${esc(x.code)} non presente</div>`).join('')+
+    (finished?missing.map(b=>`<div class="inventory-line">❓ Non trovato: ${esc(b.titolo)}</div>`).join('')+unscannable.map(b=>`<div class="inventory-line">🔢 Senza ISBN, controllo manuale: ${esc(b.titolo)}</div>`).join(''):'');
+}
+function moveInventoryBook(id){const b=books.find(x=>x.id===id);if(!b)return;askConfirm(`Spostare “${b.titolo}” in ${inventoryTarget.luogoNome}${inventoryTarget.ripiano?' · '+inventoryTarget.ripiano:''}?`,()=>{b.luogoId=inventoryTarget.luogoId;b.luogoNome=inventoryTarget.luogoNome;b.ripiano=inventoryTarget.ripiano||null;saveB();const row=[...inventoryScanned.values()].find(x=>x.book?.id===id);if(row)row.type='correct';renderInventoryResults(!inventoryActive);showToast('✅ Posizione aggiornata');});}
 function onBarcode(code){
   document.getElementById("fIsbn").value=code;
   showToast("📊 Codice letto: "+code);
@@ -1161,8 +1231,9 @@ function onBarcode(code){
 }
 
 // ── SCANNER BARCODE ──
-let _scanStream=null,_scanFrame=null,_scanBusy=false;
-async function openScanner(){
+let _scanStream=null,_scanFrame=null,_scanBusy=false,_scannerMode='add',_lastInventoryCode='',_lastInventoryAt=0;
+async function openScanner(mode){
+  _scannerMode=mode||'add';document.getElementById('scanCloseBtn').textContent=_scannerMode==='inventory'?'✅ Termina inventario':'✕ Chiudi';
   if(!("BarcodeDetector" in window)){showToast("⚠️ Scanner non supportato: usa Chrome aggiornato","var(--red)");return;}
   document.getElementById("scanModal").classList.add("open");
   const status=document.getElementById("scanStatus");
@@ -1187,9 +1258,9 @@ async function openScanner(){
         const codes=await det.detect(v);
         if(codes.length&&codes[0].rawValue){
           const c=codes[0].rawValue.replace(/\D/g,"");
-          if(navigator.vibrate)navigator.vibrate(100);
-          status.textContent="✅ ISBN letto: "+c;
-          closeScanner();onBarcode(c);return;
+          if(_scannerMode==='inventory'){
+            const now=Date.now();if(c!==_lastInventoryCode||now-_lastInventoryAt>1800){_lastInventoryCode=c;_lastInventoryAt=now;if(navigator.vibrate)navigator.vibrate(100);handleInventoryBarcode(c);}
+          }else{if(navigator.vibrate)navigator.vibrate(100);status.textContent="✅ ISBN letto: "+c;closeScanner();onBarcode(c);return;}
         }
       }catch(e){}
       finally{_scanBusy=false;}
@@ -1203,6 +1274,8 @@ function closeScanner(){
   if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}
   const v=document.getElementById("scanVideo");if(v)v.srcObject=null;
   document.getElementById("scanModal").classList.remove("open");
+  if(_scannerMode==='inventory'&&inventoryActive){inventoryActive=false;renderInventoryResults(true);}
+  _scannerMode='add';
 }
 
 // ── LOC PICKER ──
