@@ -5,7 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>La Mia Biblioteca</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f0e8">
+<title>La Mia Biblioteca v17.1</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -16,6 +21,10 @@ body.sepia{--bg:#f5f0e8;--bg2:#ede7d9;--bg3:#e4dccb;--card:#faf7f2;--card2:#ede8
 body.salvia{--bg:#eef3ee;--bg2:#e2ece2;--bg3:#d5e4d5;--card:#f6faf6;--card2:#dfeadf;--accent:#4a7c59;--accent2:#346045;--accent3:#7aaa8a;--green:#4a7c59;--yellow:#c4922a;--red:#c0412e;--text:#1a2e20;--text2:#4a6352;--text3:#7a9882;--border:rgba(50,100,60,0.14);--shadow:0 4px 20px rgba(50,100,60,0.10)}
 body.nordic{--bg:#eef2f5;--bg2:#e0e8ef;--bg3:#d2dfe9;--card:#f5f8fb;--card2:#dce7f0;--accent:#3a6b9a;--accent2:#2a5278;--accent3:#5b9ec9;--green:#3a7d6e;--yellow:#c4892a;--red:#b84040;--text:#182435;--text2:#4a6278;--text3:#7a96ae;--border:rgba(50,80,120,0.13);--shadow:0 4px 20px rgba(50,80,120,0.10)}
 body.terracotta{--bg:#f7f0eb;--bg2:#ede4db;--bg3:#e0d4c7;--card:#fcf8f4;--card2:#e8ddd3;--accent:#b85c38;--accent2:#8f3e22;--accent3:#c4922a;--green:#5a7a50;--yellow:#c4922a;--red:#9e2a2a;--text:#2e1a10;--text2:#7a4a30;--text3:#a87a60;--border:rgba(120,70,40,0.14);--shadow:0 4px 20px rgba(120,70,40,0.12)}
+body.girasole{--bg:#fff9e8;--bg2:#f8edc8;--bg3:#f1dfac;--card:#fffdf7;--card2:#fbf1d5;--accent:#d5a51d;--accent2:#8a6410;--accent3:#76905a;--green:#76905a;--yellow:#d5a51d;--red:#ba5145;--text:#30260f;--text2:#705e2f;--text3:#a18b52;--border:rgba(135,100,20,.15);--shadow:0 4px 20px rgba(120,90,20,.10)}
+body.corallo{--bg:#fff2ef;--bg2:#f9e2dd;--bg3:#f1d1ca;--card:#fffaf8;--card2:#fae8e4;--accent:#d56759;--accent2:#98463d;--accent3:#4e8b83;--green:#4e8b83;--yellow:#d5a13b;--red:#bb3e3e;--text:#321a17;--text2:#7e4c46;--text3:#ad7a73;--border:rgba(170,75,65,.14);--shadow:0 4px 20px rgba(150,65,55,.10)}
+body.mare{--bg:#edf8f7;--bg2:#dcedeb;--bg3:#cae2df;--card:#f8fcfb;--card2:#e2f1ef;--accent:#2e8e91;--accent2:#17666c;--accent3:#d18a52;--green:#4d8a68;--yellow:#d49a35;--red:#b54c4c;--text:#102b2d;--text2:#456c6e;--text3:#719698;--border:rgba(30,115,120,.14);--shadow:0 4px 20px rgba(30,100,105,.10)}
+body.prugnaChiara{--bg:#f8f1f6;--bg2:#eee1eb;--bg3:#e2d1dd;--card:#fdf9fc;--card2:#f2e7ef;--accent:#95617f;--accent2:#68405b;--accent3:#78936a;--green:#78936a;--yellow:#c49a3b;--red:#b84c52;--text:#2d1826;--text2:#704f63;--text3:#9c7b8e;--border:rgba(120,70,100,.14);--shadow:0 4px 20px rgba(100,55,85,.10)}
 
 /* ── NUOVI TEMI ── */
 body.rosa{--bg:#fdf0f0;--bg2:#f5e4e4;--bg3:#ecdada;--card:#fdf8f8;--card2:#f5eaea;--accent:#b85c7a;--accent2:#8f3a58;--accent3:#7a9870;--green:#7a9870;--yellow:#c4922a;--red:#b84040;--text:#2e1020;--text2:#7a4060;--text3:#a87090;--border:rgba(184,92,122,0.15);--shadow:0 4px 20px rgba(184,92,122,0.12)}
@@ -74,6 +83,7 @@ main{position:relative;z-index:1;padding:14px 15px 88px;max-width:720px;margin:0
 .prod-list{display:flex;flex-direction:column;gap:9px}
 .prod-card{background:var(--card);border-radius:18px;border:1px solid var(--border);box-shadow:var(--shadow);padding:13px 15px;display:flex;align-items:center;gap:13px;cursor:pointer;transition:all .18s;position:relative;overflow:hidden}
 .prod-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent3)}
+.prod-card.genre-card::before{width:6px;background:var(--genre-color,var(--accent3))}
 .prod-card.soon::before{background:var(--yellow)}
 .prod-card.critical::before{background:var(--red)}
 .prod-card:active{transform:scale(.98)}
@@ -140,6 +150,15 @@ select option{background:var(--bg2)}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex-shrink:0;padding:6px 13px;border-radius:20px;background:var(--card);border:1px solid var(--border);color:var(--text2);font-size:.78rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif}
 .chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff}
+.filter-panel{background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:11px;margin-bottom:12px}
+.filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.switch-row{display:flex;align-items:center;gap:9px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:.8rem}
+.switch-row input{width:18px;height:18px;flex:none}
+.plot-box{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:11px 13px;line-height:1.5;font-size:.84rem;white-space:pre-line}
+.source-tag{display:inline-block;margin-top:6px;border-radius:20px;background:var(--bg3);color:var(--text2);padding:3px 9px;font-size:.68rem}
+.genre-dot{display:inline-block;width:11px;height:11px;border-radius:50%;background:var(--genre-color);margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.12)}
+.search-result{display:flex;gap:11px;align-items:center;padding:10px;border-bottom:1px solid var(--border);cursor:pointer}
+.search-result:last-child{border-bottom:none}.search-result:active{background:var(--card2)}
 
 /* ── SEARCH ── */
 .srch-row{display:flex;gap:8px;margin-bottom:14px}
@@ -407,6 +426,21 @@ select option{background:var(--bg2)}
 /* ── BIBLIOTECA EXTRA ── */
 .book-cover{width:46px;height:64px;border-radius:6px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;overflow:hidden;border:1px solid var(--border)}
 .book-cover img{width:100%;height:100%;object-fit:cover}
+.genre-cover{width:46px;height:64px;border-radius:5px 9px 9px 5px;background:var(--genre-color);display:flex;align-items:center;justify-content:center;color:#fff;font-size:21px;flex-shrink:0;box-shadow:inset 5px 0 rgba(0,0,0,.16),0 2px 5px rgba(0,0,0,.16);text-shadow:0 1px 2px rgba(0,0,0,.45)}
+.genre-cover.large{width:74px;height:104px;font-size:32px;border-radius:7px 12px 12px 7px;box-shadow:inset 8px 0 rgba(0,0,0,.16),0 3px 8px rgba(0,0,0,.18)}
+.prod-card.compact{min-height:52px;padding:5px 9px!important;gap:8px!important;margin-bottom:5px!important;border-radius:11px!important}
+.prod-card.compact .genre-cover{width:30px;height:40px;font-size:15px;border-radius:4px 7px 7px 4px;box-shadow:inset 4px 0 rgba(0,0,0,.16)}
+.compact-main{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.86rem}
+.compact-side{max-width:34%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;color:var(--text3);font-size:.68rem;flex-shrink:0}
+.genre-picker-row{display:flex;align-items:center;gap:10px;padding:7px 4px;border-bottom:1px solid var(--border);cursor:pointer}
+.genre-picker-row:last-child{border-bottom:none}.genre-picker-row .genre-cover{width:30px;height:40px;font-size:15px}
+.genre-select-btn{width:100%;min-height:42px;display:flex;align-items:center;gap:9px;text-align:left;padding:6px 10px}
+.genre-select-btn .genre-cover,#genreLegend .genre-cover{width:24px;height:32px;font-size:12px;border-radius:3px 6px 6px 3px;box-shadow:inset 3px 0 rgba(0,0,0,.16)}
+.stat-bar-row{display:grid;grid-template-columns:minmax(90px,1fr) 2fr 32px;gap:8px;align-items:center;margin:7px 0;font-size:.76rem;cursor:pointer}
+.stat-bar-track{height:10px;background:var(--bg3);border-radius:6px;overflow:hidden}.stat-bar-fill{height:100%;border-radius:6px;background:var(--accent)}
+.maint-row{display:grid;grid-template-columns:minmax(90px,1fr) 1.4fr auto;gap:6px;align-items:center;margin-bottom:7px}.maint-row input{padding:7px 9px;font-size:.8rem}.maint-row .btn-sm{padding:7px 9px}
+.inventory-line{font-size:.77rem;padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:7px;align-items:center}.inventory-line:last-child{border-bottom:none}
+.today-box{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
 .stato-badge{font-size:.68rem;padding:2px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);white-space:nowrap}
 .stars{display:flex;gap:3px;font-size:1.25rem;cursor:pointer;user-select:none}
 .stars span{opacity:.25;transition:opacity .15s}
@@ -477,17 +511,17 @@ select option{background:var(--bg2)}
     <rect x="14" y="14" width="372" height="672" rx="10" fill="none" stroke="#c9a45a" stroke-width="1.4" opacity=".4"/>
     <rect x="20" y="20" width="360" height="660" rx="7" fill="none" stroke="#c9a45a" stroke-width=".7" opacity=".3"/>
   </svg>
-  <img src="copertina.jpg" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+  <img src="copertina_v11.png" alt="" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(10,6,3,0) 55%,rgba(10,6,3,.55))"></div>
   <div style="position:absolute;top:17%;left:0;right:0;display:flex;flex-direction:column;align-items:center">
     <div class="splash-title" style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:900;letter-spacing:.5px">La Mia Biblioteca</div>
-    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V7</div>
+    <div class="splash-version" style="margin-top:8px;font-size:.85rem;letter-spacing:2px">V13.5</div>
   </div>
 </div>
 
 <header style="position:sticky;top:0;z-index:50;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:11px">
   <span style="font-size:26px">📚</span>
-  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v7</span></h1>
+  <h1 style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--accent2)">La Mia Biblioteca <span style="font-size:.65rem;font-weight:400;opacity:.6;font-family:'DM Sans',sans-serif">v17.1</span></h1>
 </header>
 
 <main style="padding:16px 16px 90px;max-width:720px;margin:0 auto">
@@ -499,10 +533,29 @@ select option{background:var(--bg2)}
 </div>
 
 <div class="section" id="sec-libri">
-  <input type="text" id="libSearch" placeholder="🔍 Cerca per titolo o autore..." oninput="renderLibri()" style="width:100%;margin-bottom:10px">
+  <h2 style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--accent2);margin-bottom:12px">📖 Cosa leggo oggi?</h2>
+  <div class="today-box">
+    <div class="filter-grid" style="margin-bottom:8px"><select id="todayGenre"></select><select id="todayAuthor"></select></div>
+    <input type="text" id="todayKeywords" placeholder="Parole nella trama, es. antica Roma, viaggio..." style="margin-bottom:8px">
+    <select id="todayStatus" style="margin-bottom:10px"><option value="daleggere">Solo da leggere</option><option value="">Qualsiasi stato</option><option value="inlettura">In lettura</option><option value="letto">Già letti</option><option value="desideri">Desideri</option></select>
+    <button class="btn-p" type="button" onclick="suggestToday()">🎲 Suggeriscimi un libro</button>
+    <button class="btn-s" type="button" onclick="showTodayResults()" style="width:100%;margin-top:8px">📚 Mostra tutti i risultati</button>
+    <div id="todaySuggestion" style="margin-top:10px"></div>
+  </div>
+  <div class="stg-hdr open" onclick="toggleCatalog(this)"><span>📚 Tutti i libri</span><span class="stg-arr open">›</span></div>
+  <div id="catalogBody">
+  <div style="display:flex;gap:8px;margin:10px 0"><input type="text" id="libSearch" placeholder="🔍 Titolo, autore, ISBN o posizione..." oninput="renderLibri()"><button class="btn-s" onclick="toggleAdvancedFilters()" style="padding:10px 13px" aria-label="Filtri avanzati">☰</button></div>
+  <div id="advancedFilters" class="filter-panel" hidden>
+    <div class="flabel" style="margin-bottom:7px">Ricerca e ordinamento avanzati</div>
+    <div class="filter-grid">
+      <select id="libSort" onchange="renderLibri()"><option value="titolo">Titolo A–Z</option><option value="autore">Autore A–Z</option><option value="recenti">Ultimi inseriti</option><option value="anno">Anno più recente</option><option value="voto">Voto più alto</option><option value="posizione">Posizione</option></select>
+      <select id="libPlace" onchange="renderLibri()"><option value="">Tutte le posizioni</option></select>
+    </div>
+  </div>
   <div id="libGenChips" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:4px"></div>
   <div id="libStatoChips" style="display:flex;gap:7px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px"></div>
   <div id="libList"></div>
+  </div>
 </div>
 
 <div class="section" id="sec-add">
@@ -511,21 +564,18 @@ select option{background:var(--bg2)}
     <div style="display:flex;gap:8px"><input type="text" id="fIsbn" placeholder="es. 9788804668237" style="flex:1" inputmode="numeric">
     <button class="btn-s" onclick="openScanner()" style="white-space:nowrap">📊 Scan</button>
     <button class="btn-s" onclick="isbnLookup()" style="white-space:nowrap">🔎 Cerca</button></div>
-    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Compila titolo, autore e copertina da Open Library</div>
+    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Ricerca prima nel catalogo nazionale SBN, poi in Google Books e Open Library</div>
   </div>
-  <div class="fg" style="margin-bottom:12px">
-    <div style="display:flex;gap:8px">
-      <label for="coverPhotoCam" class="btn-s" style="flex:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer">📷 Fotocamera</label>
-      <label for="coverPhoto" class="btn-s" style="flex:1;display:flex;align-items:center;justify-content:center;box-sizing:border-box;cursor:pointer">🖼️ Galleria</label>
-    </div>
-    <input type="file" id="coverPhotoCam" accept="image/*" capture="environment" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" onchange="photoLookup(this)">
-    <input type="file" id="coverPhoto" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" onchange="photoLookup(this)">
-    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">L'AI riconosce titolo e autore e usa la foto come copertina</div>
+  <div class="switch-row"><input type="checkbox" id="multiScan"><label for="multiScan"><strong>Scansione multipla</strong><br><span style="color:var(--text3)">Dopo il salvataggio riapre la fotocamera</span></label></div>
+  <div class="fg" style="margin-bottom:12px"><label class="flabel">📖 Titolo *</label><input type="text" id="fTitolo" placeholder="Titolo del libro"></div>
+  <div class="fg" style="margin-bottom:8px"><label class="flabel">✍️ Autore</label><input type="text" id="fAutore" placeholder="Nome dell’autore"></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button class="btn-s" id="voiceBookBtn" type="button" onclick="startBookDictation()" style="flex:1">🎙️ Detta titolo e autore</button>
+    <button class="btn-s" type="button" onclick="titleAuthorLookup()" style="flex:1">🔎 Cerca libro</button>
   </div>
-  <div class="fg" style="margin-bottom:12px"><label class="flabel">📖 Titolo *</label><input type="text" id="fTitolo"></div>
-  <div class="fg" style="margin-bottom:12px"><label class="flabel">✍️ Autore</label><input type="text" id="fAutore"></div>
+  <div style="font-size:.72rem;color:var(--text3);margin-top:-7px;margin-bottom:12px">Esempio: “Titolo I promessi sposi, autore Alessandro Manzoni”</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px">
-    <div class="fg"><label class="flabel">Genere</label><select id="fGenere"></select></div>
+    <div class="fg"><label class="flabel">Genere</label><select id="fGenere" hidden></select><button id="fGenereBtn" class="btn-s genre-select-btn" type="button" onclick="openGenrePicker('form')"></button></div>
     <div class="fg"><label class="flabel">Anno</label><input type="number" id="fAnno" placeholder="es. 2021"></div>
   </div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:12px">
@@ -534,6 +584,8 @@ select option{background:var(--bg2)}
   </div>
   <div class="fg" style="margin-bottom:12px"><label class="flabel">👤 Già letto da</label><div id="fLettori" style="display:flex;gap:7px;flex-wrap:wrap"></div></div>
   <div class="fg" style="margin-bottom:12px"><label class="flabel">📍 Dove si trova?</label><div id="locPicker" class="loc-picker"></div></div>
+  <div class="switch-row" style="margin-top:-5px;margin-bottom:12px"><input type="checkbox" id="keepLocation"><label for="keepLocation"><strong>Mantieni questa posizione</strong><br><span style="color:var(--text3)">Usala per i prossimi libri della scansione multipla</span></label></div>
+  <div class="fg" style="margin-bottom:12px"><label class="flabel">📜 Trama</label><textarea id="fTrama" rows="7" placeholder="Viene cercata automaticamente insieme ai dati del libro"></textarea><div><span class="source-tag" id="tramaSource">Fonte: non disponibile</span> <button class="btn-sm" type="button" onclick="searchPlot()">🔄 Cerca trama</button></div></div>
   <div class="fg" style="margin-bottom:16px"><label class="flabel">📝 Note</label><input type="text" id="fNote" placeholder="es. regalo di Anna"></div>
   <button class="btn-p" onclick="saveBook()">💾 Salva Libro</button>
 </div>
@@ -545,52 +597,53 @@ select option{background:var(--bg2)}
 
 <div class="section" id="sec-impostazioni">
   <h2 style="font-family:'Playfair Display',serif;font-size:1.15rem;color:var(--accent2);margin-bottom:14px">⚙️ Impostazioni</h2>
-  <div class="flabel" style="margin-bottom:8px">📚 Librerie e scaffali</div>
-  <div id="stgLuoghi" style="margin-bottom:18px"></div>
-  <div style="display:flex;gap:8px;margin-bottom:8px">
-    <input type="text" id="newLuogoNome" placeholder="es. 📚 Libreria grande" style="flex:1">
-    <button class="btn-s" onclick="addLuogo()">＋</button>
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>🎨 Aspetto e colori</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div class="theme-grid">
+    <div class="theme-opt card" data-theme="sepia" onclick="setTheme('sepia')"><strong>📜 Pergamena</strong><div class="theme-dots"><i class="theme-dot" style="background:#8a7a5a"></i><i class="theme-dot" style="background:#e4dccb"></i><i class="theme-dot" style="background:#5e7a60"></i></div></div>
+    <div class="theme-opt card" data-theme="salvia" onclick="setTheme('salvia')"><strong>🌿 Salvia</strong><div class="theme-dots"><i class="theme-dot" style="background:#4a7c59"></i><i class="theme-dot" style="background:#d5e4d5"></i><i class="theme-dot" style="background:#c4922a"></i></div></div>
+    <div class="theme-opt card" data-theme="nordic" onclick="setTheme('nordic')"><strong>🧊 Nordica</strong><div class="theme-dots"><i class="theme-dot" style="background:#3a6b9a"></i><i class="theme-dot" style="background:#d2dfe9"></i><i class="theme-dot" style="background:#5b9ec9"></i></div></div>
+    <div class="theme-opt card" data-theme="terracotta" onclick="setTheme('terracotta')"><strong>🏺 Terracotta</strong><div class="theme-dots"><i class="theme-dot" style="background:#b85c38"></i><i class="theme-dot" style="background:#e0d4c7"></i><i class="theme-dot" style="background:#c4922a"></i></div></div>
+    <div class="theme-opt card" data-theme="girasole" onclick="setTheme('girasole')"><strong>🌻 Girasole</strong><div class="theme-dots"><i class="theme-dot" style="background:#d5a51d"></i><i class="theme-dot" style="background:#f1dfac"></i><i class="theme-dot" style="background:#76905a"></i></div></div>
+    <div class="theme-opt card" data-theme="corallo" onclick="setTheme('corallo')"><strong>🪸 Corallo</strong><div class="theme-dots"><i class="theme-dot" style="background:#d56759"></i><i class="theme-dot" style="background:#f1d1ca"></i><i class="theme-dot" style="background:#4e8b83"></i></div></div>
+    <div class="theme-opt card" data-theme="mare" onclick="setTheme('mare')"><strong>🌊 Mare</strong><div class="theme-dots"><i class="theme-dot" style="background:#2e8e91"></i><i class="theme-dot" style="background:#cae2df"></i><i class="theme-dot" style="background:#d18a52"></i></div></div>
+    <div class="theme-opt card" data-theme="prugnaChiara" onclick="setTheme('prugnaChiara')"><strong>🫐 Prugna</strong><div class="theme-dots"><i class="theme-dot" style="background:#95617f"></i><i class="theme-dot" style="background:#e2d1dd"></i><i class="theme-dot" style="background:#78936a"></i></div></div>
+    <div class="theme-opt card" data-theme="rosa" onclick="setTheme('rosa')"><strong>🌸 Rosa</strong><div class="theme-dots"><i class="theme-dot" style="background:#b85c7a"></i><i class="theme-dot" style="background:#ecdada"></i><i class="theme-dot" style="background:#7a9870"></i></div></div>
+    <div class="theme-opt card" data-theme="lavanda" onclick="setTheme('lavanda')"><strong>💜 Lavanda</strong><div class="theme-dots"><i class="theme-dot" style="background:#7a5cb8"></i><i class="theme-dot" style="background:#ddd5f0"></i><i class="theme-dot" style="background:#5e8a70"></i></div></div>
+    <div class="theme-opt card" data-theme="pesca" onclick="setTheme('pesca')"><strong>🍑 Pesca</strong><div class="theme-dots"><i class="theme-dot" style="background:#d4804a"></i><i class="theme-dot" style="background:#eddcc8"></i><i class="theme-dot" style="background:#6a9060"></i></div></div>
+    <div class="theme-opt card" data-theme="cielo" onclick="setTheme('cielo')"><strong>☁️ Cielo</strong><div class="theme-dots"><i class="theme-dot" style="background:#4a8ab8"></i><i class="theme-dot" style="background:#d0e2f4"></i><i class="theme-dot" style="background:#5a9870"></i></div></div>
+  </div></div>
+
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>🌈 Colori dei generi</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div id="genreLegend" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div></div>
+
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>📚 Librerie e scaffali</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div id="stgLuoghi" style="margin-bottom:14px"></div><div style="display:flex;gap:8px;margin-bottom:8px"><input type="text" id="newLuogoNome" placeholder="es. 📚 Libreria grande"><button class="btn-s" onclick="addLuogo()">＋</button></div><input type="text" id="newLuogoStanza" placeholder="🏠 Stanza (facoltativa)"></div>
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>👤 Lettori</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div id="stgLettori" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px"></div><div style="display:flex;gap:8px"><input type="text" id="newLettore" placeholder="es. Daniela"><button class="btn-s" onclick="addLettore()">＋</button></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderStats()"><span>📊 Statistiche</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div id="statsPanel"></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderInventorySetup()"><span>📦 Inventario libreria</span><span class="stg-arr">›</span></div>
+  <div class="stg-body">
+    <div class="filter-grid" style="margin-bottom:9px"><select id="inventoryLuogo" onchange="renderInventoryShelves()"></select><select id="inventoryRipiano"></select></div>
+    <button class="btn-p" onclick="startInventory()">📊 Avvia scansione inventario</button>
+    <div id="inventoryResults" style="margin-top:10px"></div>
   </div>
-  <input type="text" id="newLuogoStanza" placeholder="🏠 Stanza (facoltativa, es. Salotto)" style="width:100%;margin-bottom:24px">
-  <div class="flabel" style="margin-bottom:8px">👤 Lettori</div>
-  <div id="stgLettori" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:8px"></div>
-  <div style="display:flex;gap:8px;margin-bottom:24px">
-    <input type="text" id="newLettore" placeholder="es. Daniela" style="flex:1">
-    <button class="btn-s" onclick="addLettore()">＋</button>
-  </div>
-  <div class="flabel" style="margin-bottom:8px">☁️ Sincronizzazione</div>
-  <div class="fg" style="margin-bottom:10px"><label class="flabel">🔗 URL script di sincronizzazione</label>
-    <input type="text" id="syncUrlInput" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:.78rem"></div>
-  <div class="fg" style="margin-bottom:10px"><label class="flabel">🔑 PIN</label>
-    <input type="password" id="syncPinInput" placeholder="PIN impostato nello script"></div>
-  <label style="display:flex;align-items:center;gap:10px;font-size:.85rem;margin-bottom:12px;cursor:pointer">
-    <input type="checkbox" id="syncAutoInput" style="width:18px;height:18px"> Sincronizzazione automatica
-  </label>
-  <button class="btn-p" style="margin-bottom:12px" onclick="saveSyncSettings()">💾 Salva configurazione</button>
-  <div style="display:flex;gap:9px;margin-bottom:8px">
-    <button class="btn-s" style="flex:1" onclick="syncUpload(false)">⬆️ Invia al cloud</button>
-    <button class="btn-s" style="flex:1" onclick="syncDownload(true)">⬇️ Scarica dal cloud</button>
-  </div>
-  <div id="syncLastInfo" style="font-size:.75rem;color:var(--text3);margin-bottom:24px;text-align:center"></div>
-  <div class="flabel" style="margin-bottom:8px">🤖 Intelligenza artificiale</div>
-  <div class="fg" style="margin-bottom:10px"><label class="flabel">🔑 API Key Gemini</label>
-    <input type="password" id="geminiKeyInput" placeholder="Per il riconoscimento copertine">
-    <div style="font-size:.72rem;color:var(--text3);margin-top:4px">Gratis su <strong>aistudio.google.com</strong> · condivisa con la Dispensa su questo dispositivo</div></div>
-  <button class="btn-s" style="margin-bottom:24px" onclick="saveGeminiKey()">💾 Salva chiave</button>
-  <div class="flabel" style="margin-bottom:8px">🗂️ Dati</div>
-  <div style="display:flex;gap:9px;margin-bottom:8px">
-    <button class="btn-s" style="flex:1" onclick="exportData()">📤 Esporta</button>
-    <button class="btn-s" style="flex:1" onclick="document.getElementById('importFile').click()">📥 Importa</button>
-  </div>
-  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
-  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v8</div>
+  <div class="stg-hdr" onclick="toggleSetting(this);renderAuthorMaintenance()"><span>✍️ Uniforma autori</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div style="font-size:.73rem;color:var(--text3);margin-bottom:9px">Modifica un nome e applicalo a tutti i libri che usano esattamente quella forma. Nessuna unione è automatica.</div><div id="authorMaintenance"></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>☁️ Sincronizzazione</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div class="fg" style="margin-bottom:10px"><label class="flabel">🔗 URL script</label><input type="text" id="syncUrlInput" placeholder="https://script.google.com/macros/s/.../exec"></div><div class="fg" style="margin-bottom:10px"><label class="flabel">🔑 PIN</label><input type="password" id="syncPinInput" placeholder="PIN impostato nello script"></div><label style="display:flex;gap:10px;align-items:center;margin-bottom:12px"><input type="checkbox" id="syncAutoInput" style="width:18px"> Sincronizzazione automatica</label><button class="btn-p" onclick="saveSyncSettings()">💾 Salva configurazione</button><div id="syncLastInfo"></div></div>
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>🤖 Intelligenza artificiale</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div class="fg"><label class="flabel">🔑 API Key Gemini</label><input type="password" id="geminiKeyInput" placeholder="Usata esclusivamente per cercare le trame"></div><button class="btn-s" style="margin-top:10px" onclick="saveGeminiKey()">💾 Salva chiave</button></div>
+  <div class="stg-hdr" onclick="toggleSetting(this)"><span>🗂️ Dati e backup</span><span class="stg-arr">›</span></div>
+  <div class="stg-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:9px"><button class="btn-s" onclick="exportData()">📤 Backup JSON</button><button class="btn-s" onclick="document.getElementById('importFile').click()">📥 Importa JSON</button><button class="btn-s" style="grid-column:1/-1" onclick="exportCsv()">📊 Esporta catalogo CSV</button></div><input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)"></div>
+  <div style="font-size:.72rem;color:var(--text3);text-align:center;margin-top:14px">La Mia Biblioteca v17.1</div>
 </div>
 
 </main>
 
 <nav style="position:fixed;bottom:0;left:0;right:0;z-index:60;background:var(--bg2);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 4px max(8px,env(safe-area-inset-bottom))">
   <div class="ni on" id="nav-home" onclick="goTo('home')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">🏠</div>Home</div>
-  <div class="ni" id="nav-libri" onclick="goTo('libri')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">📚</div>Libri</div>
+  <div class="ni" id="nav-libri" onclick="goTo('libri')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">📖</div>Oggi</div>
   <div class="ni" id="nav-add" onclick="clearForm();goTo('add')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">➕</div>Aggiungi</div>
   <div class="ni" id="nav-prestiti" onclick="goTo('prestiti')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">🤝</div>Prestiti</div>
   <div class="ni" id="nav-impostazioni" onclick="goTo('impostazioni')" style="text-align:center;cursor:pointer;font-size:.62rem;color:var(--text2)"><div style="font-size:21px">⚙️</div>Altro</div>
@@ -616,7 +669,35 @@ select option{background:var(--bg2)}
     <div style="font-weight:700;margin-bottom:10px;color:var(--accent2)">📊 Inquadra il codice a barre</div>
     <video id="scanVideo" playsinline muted style="width:100%;border-radius:12px;background:#000;aspect-ratio:3/4;object-fit:cover"></video>
     <div id="scanStatus" style="margin-top:9px;text-align:center;font-size:.82rem;color:var(--text2)">Avvio fotocamera...</div>
-    <button class="btn-s" style="width:100%;margin-top:10px" onclick="closeScanner()">✕ Chiudi</button>
+    <button class="btn-s" id="scanCloseBtn" style="width:100%;margin-top:10px" onclick="closeScanner()">✕ Chiudi</button>
+  </div>
+</div>
+
+<!-- RISULTATI RICERCA TITOLO/AUTORE -->
+<div class="overlay" id="searchBookModal" onclick="if(event.target===this)closeBookSearch()">
+  <div class="modal"><div class="modal-handle"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--accent2);margin-bottom:10px">🔎 Scegli il libro corretto</div>
+    <div id="searchBookResults"></div>
+    <button class="btn-s" style="width:100%;margin-top:12px" onclick="closeBookSearch()">✕ Chiudi</button>
+  </div>
+</div>
+
+<!-- SELETTORE CATEGORIA -->
+<div class="overlay" id="genreModal" onclick="if(event.target===this)closeGenrePicker()">
+  <div class="modal"><div class="modal-handle"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--accent2);margin-bottom:8px">Scegli la categoria</div>
+    <div id="genrePickerList"></div>
+    <button class="btn-s" style="width:100%;margin-top:12px" onclick="closeGenrePicker()">✕ Chiudi</button>
+  </div>
+</div>
+
+<!-- MODIFICA RAPIDA POSIZIONE -->
+<div class="overlay" id="quickLocationModal" onclick="if(event.target===this)closeQuickLocation()">
+  <div class="modal"><div class="modal-handle"></div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--accent2);margin-bottom:12px">📍 Cambia posizione</div>
+    <div class="fg" style="margin-bottom:10px"><label class="flabel">Libreria</label><select id="quickLuogo" onchange="fillQuickShelves()"></select></div>
+    <div class="fg" style="margin-bottom:14px"><label class="flabel">Scaffale o ripiano</label><select id="quickRipiano"></select></div>
+    <button class="btn-p" onclick="saveQuickLocation()">💾 Salva posizione</button>
   </div>
 </div>
 
@@ -636,8 +717,9 @@ select option{background:var(--bg2)}
 
 <script>
 // ── STATE ──
-const GENERI={"Romanzo":"📕","Giallo/Thriller":"🔪","Fantasy":"🐉","Fantascienza":"🚀","Saggio":"🧠","Biografia":"👤","Storia":"🏛️","Arte":"🎨","Cucina":"🍳","Bambini/Ragazzi":"🧒","Poesia":"✒️","Fumetti":"💬","Altro":"📚"};
-const STATI={daleggere:{l:"Da leggere",e:"🔖"},inlettura:{l:"In lettura",e:"📖"},letto:{l:"Letto",e:"✅"}};
+const GENERI={"Da classificare":"?","Giallo/Poliziesco":"🔎","Noir":"🌑","Thriller":"⚡","Romanzo":"📖","Storico":"🏛️","Saggio":"🧠","Fantascienza":"🚀","Fantasy":"🐉","Horror":"🕯️","Romance":"💗","Biografia/Memorie":"👤","Classici":"🏺","Poesia":"✒️","Teatro":"🎭","Umorismo":"😄","Avventura":"🧭","Bambini/Ragazzi":"🧒","Fumetti/Graphic novel":"💬","Religione/Spiritualità":"✨","Manuali/Consultazione":"🛠️","Arte":"🎨","Cucina":"🍳","Altro":"📚"};
+const GENERE_COLORI={"Da classificare":"#9CA3AF","Giallo/Poliziesco":"#F4C430","Giallo/Thriller":"#F4C430","Noir":"#30343B","Thriller":"#D97706","Romanzo":"#3B82F6","Storico":"#C44A3D","Storia":"#C44A3D","Saggio":"#4F9D69","Fantascienza":"#22B8CF","Fantasy":"#7C3AED","Horror":"#7F1D3D","Romance":"#E879A9","Biografia/Memorie":"#F28C28","Biografia":"#F28C28","Classici":"#8B5E3C","Poesia":"#A78BFA","Teatro":"#137C78","Umorismo":"#9ACD32","Avventura":"#14B8A6","Bambini/Ragazzi":"#F97360","Fumetti/Graphic novel":"#60A5FA","Fumetti":"#60A5FA","Religione/Spiritualità":"#C99700","Manuali/Consultazione":"#7A8088","Arte":"#C06CAB","Cucina":"#E56B35","Altro":"#B8BDC5"};
+const STATI={daleggere:{l:"Da leggere",e:"🔖"},inlettura:{l:"In lettura",e:"📖"},letto:{l:"Letto",e:"✅"},desideri:{l:"Desideri",e:"💝"}};
 let books=[],settings=null,currentBookId=null,locPickerLuogo=null,locPickerRipiano=null;
 let confirmCallback=null,renameLuogoIdx=null,libGenFilter=null,libStatoFilter=null,libLettoreFilter=null,loanBookId=null,formVoto=0,formLettoDa=[];
 
@@ -646,6 +728,8 @@ function load(){
   try{settings=JSON.parse(localStorage.getItem("biblioteca_settings_v1")||"null");}catch{settings=null;}
   if(!settings)settings={luoghi:[{id:"l1",nome:"📚 Libreria Soggiorno",ripiani:["Ripiano 1","Ripiano 2","Ripiano 3"]},{id:"l2",nome:"🛏️ Camera",ripiani:[]}]};
   if(!settings.lettori)settings.lettori=["Daniela","Luca"];
+  if(!settings.theme)settings.theme="sepia";
+  document.body.className=settings.theme;
 }
 function saveB(){localStorage.setItem("biblioteca_v1",JSON.stringify(books));scheduleAutoUpload();}
 function saveS(){localStorage.setItem("biblioteca_settings_v1",JSON.stringify(settings));scheduleAutoUpload();}
@@ -674,54 +758,91 @@ function goTo(s){
   if(s==="home")renderHome();
   if(s==="libri")renderLibri();
   if(s==="prestiti")renderPrestiti();
-  if(s==="impostazioni"){renderStgLuoghi();renderStgLettori();fillSyncForm();}
+  if(s==="impostazioni"){collapseSettings();renderStgLuoghi();renderStgLettori();fillSyncForm();renderThemeSelection();renderInventorySetup();}
+}
+function toggleAdvancedFilters(){const p=document.getElementById("advancedFilters");p.hidden=!p.hidden;if(!p.hidden)fillPlaceFilter();}
+function toggleCatalog(header){const body=document.getElementById("catalogBody"),open=!body.hidden;body.hidden=open;header.classList.toggle("open",!open);header.querySelector(".stg-arr")?.classList.toggle("open",!open);}
+function fillPlaceFilter(){
+  const p=document.getElementById("libPlace"),selected=p.value;p.innerHTML='<option value="">Tutte le posizioni</option>';
+  settings.luoghi.forEach(l=>p.add(new Option((l.stanza?l.stanza+" · ":"")+l.nome,l.id)));
+  p.value=selected;
 }
 
 // ── HOME ──
 function renderHome(){
   const tot=books.length,letti=books.filter(b=>b.stato==="letto").length;
   const dale=books.filter(b=>b.stato==="daleggere").length,prest=books.filter(b=>b.prestito).length;
+  const reading=books.filter(b=>b.stato==="inlettura").length,des=books.filter(b=>b.stato==="desideri").length;
   const stat=(n,l,e)=>`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow)"><div style="font-size:22px">${e}</div><div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:var(--accent2)">${n}</div><div style="font-size:.72rem;color:var(--text2)">${l}</div></div>`;
-  document.getElementById("homeStats").innerHTML=stat(tot,"Libri totali","📚")+stat(letti,"Letti","✅")+stat(dale,"Da leggere","🔖")+stat(prest,"In prestito","🤝");
+  document.getElementById("homeStats").innerHTML=stat(tot,"Libri totali","📚")+stat(letti,"Letti","✅")+stat(reading,"In lettura","📖")+stat(dale,"Da leggere","🔖")+stat(des,"Desideri","💝")+stat(prest,"In prestito","🤝");
   const rec=[...books].sort((a,b)=>(b.addedAt||0)-(a.addedAt||0)).slice(0,5);
   document.getElementById("homeRecent").innerHTML=rec.length?rec.map(bookCardHtml).join(""):'<div class="empty"><div class="empty-ico">📚</div><p>Nessun libro ancora.<br>Tocca ➕ per aggiungere il primo!</p></div>';
 }
 
 // ── CARD ──
 function starsHtml(v){if(!v)return"";return`<span class="stars-sm" style="color:var(--yellow)">${"★".repeat(v)}${"☆".repeat(5-v)}</span>`;}
+function genreCoverHtml(b,large){const g=b.genere||"Da classificare",darkText=["Giallo/Poliziesco","Umorismo","Religione/Spiritualità","Bambini/Ragazzi","Da classificare"].includes(g);return`<div class="genre-cover${large?" large":""}" style="--genre-color:${GENERE_COLORI[g]||GENERE_COLORI.Altro};${darkText?"color:#332b18;text-shadow:none":""}" aria-label="${esc(g)}">${GENERI[g]||"📚"}</div>`;}
 function bookCardHtml(b){
   const st=STATI[b.stato]||STATI.daleggere;
-  const cover=b.cover?`<img src="${esc(b.cover)}" alt="" onerror="this.parentNode.textContent='${GENERI[b.genere]||"📚"}'">`:(GENERI[b.genere]||"📚");
-  return`<div class="prod-card" onclick="openBook('${b.id}')" style="display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:11px 13px;margin-bottom:9px;box-shadow:var(--shadow);cursor:pointer">
-    <div class="book-cover">${cover}</div>
-    <div style="flex:1;min-width:0">
-      <div style="font-weight:600;font-size:.93rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.titolo)}</div>
-      <div style="font-size:.78rem;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(b.autore||"Autore sconosciuto")}</div>
-      <div style="font-size:.72rem;color:var(--text3);margin-top:2px">${b.luogoNome?esc(b.luogoNome)+(b.ripiano?" · "+esc(b.ripiano):""):"📍 Senza posizione"} ${b.prestito?"· 🤝 "+esc(b.prestito.a):""}${(b.lettoDa||[]).length?" · 👤 "+b.lettoDa.map(esc).join(", "):""}</div>
-    </div>
-    <div style="text-align:right;display:flex;flex-direction:column;gap:5px;align-items:flex-end">
-      <span class="stato-badge">${st.e} ${st.l}</span>
-      ${starsHtml(b.voto)}
-    </div>
+  const where=b.luogoNome?(b.luogoNome+(b.ripiano?" · "+b.ripiano:"")):"Senza posizione";
+  return`<div class="prod-card genre-card compact" onclick="openBook('${b.id}')" style="--genre-color:${GENERE_COLORI[b.genere]||GENERE_COLORI.Altro};display:flex;align-items:center;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);cursor:pointer">
+    ${genreCoverHtml(b,false)}
+    <div class="compact-main"><strong>${esc(b.titolo)}</strong><span style="color:var(--text2)"> — ${esc(b.autore||"Autore sconosciuto")}</span></div>
+    <div class="compact-side">${st.e} 📍 ${esc(where)}</div>
   </div>`;
 }
 
 // ── LIBRI ──
 function renderLibri(){
+  renderTodayFilters();
   const gens=[...new Set(books.map(b=>b.genere).filter(Boolean))];
-  document.getElementById("libGenChips").innerHTML=`<div class="chip${!libGenFilter?" on":""}" onclick="libGenFilter=null;renderLibri()">Tutti</div>`+gens.map(g=>`<div class="chip${libGenFilter===g?" on":""}" onclick="libGenFilter='${esc(g)}';renderLibri()">${GENERI[g]||"📚"} ${esc(g)}</div>`).join("");
+  document.getElementById("libGenChips").innerHTML=`<div class="chip${!libGenFilter?" on":""}" onclick="libGenFilter=null;renderLibri()">Tutti</div>`+gens.map(g=>`<div class="chip${libGenFilter===g?" on":""}" onclick="libGenFilter='${esc(g)}';renderLibri()"><span class="genre-dot" style="--genre-color:${GENERE_COLORI[g]||GENERE_COLORI.Altro}"></span>${esc(g)}</div>`).join("");
   document.getElementById("libStatoChips").innerHTML=`<div class="chip${!libStatoFilter?" on":""}" onclick="libStatoFilter=null;renderLibri()">Ogni stato</div>`+Object.entries(STATI).map(([k,s])=>`<div class="chip${libStatoFilter===k?" on":""}" onclick="libStatoFilter='${k}';renderLibri()">${s.e} ${s.l}</div>`).join("")+(settings.lettori||[]).map(n=>`<div class="chip${libLettoreFilter===n?" on":""}" onclick="libLettoreFilter=libLettoreFilter==='${esc(n)}'?null:'${esc(n)}';renderLibri()">👤 ${esc(n)}</div>`).join("");
   const q=(document.getElementById("libSearch").value||"").toLowerCase().trim();
-  let list=books.filter(b=>(!q||b.titolo.toLowerCase().includes(q)||(b.autore||"").toLowerCase().includes(q))&&(!libGenFilter||b.genere===libGenFilter)&&(!libStatoFilter||b.stato===libStatoFilter)&&(!libLettoreFilter||(b.lettoDa||[]).includes(libLettoreFilter)));
-  list.sort((a,b)=>a.titolo.localeCompare(b.titolo));
+  const loc=document.getElementById("libPlace")?.value||"";
+  let list=books.filter(b=>(!q||[b.titolo,b.autore,b.isbn,b.luogoNome,b.ripiano].some(v=>(v||"").toLowerCase().includes(q)))&&(!loc||b.luogoId===loc)&&(!libGenFilter||b.genere===libGenFilter)&&(!libStatoFilter||b.stato===libStatoFilter)&&(!libLettoreFilter||(b.lettoDa||[]).includes(libLettoreFilter)));
+  const sort=document.getElementById("libSort")?.value||"titolo";
+  list.sort((a,b)=>sort==="autore"?(a.autore||"").localeCompare(b.autore||""):sort==="recenti"?(b.addedAt||0)-(a.addedAt||0):sort==="anno"?(b.anno||0)-(a.anno||0):sort==="voto"?(b.voto||0)-(a.voto||0):sort==="posizione"?((a.luogoNome||"")+(a.ripiano||"")).localeCompare((b.luogoNome||"")+(b.ripiano||"")):a.titolo.localeCompare(b.titolo));
   document.getElementById("libList").innerHTML=list.length?list.map(bookCardHtml).join(""):'<div class="empty"><div class="empty-ico">🔍</div><p>Nessun libro trovato.</p></div>';
+}
+
+// ── COSA LEGGO OGGI ──
+let todayLastId=null;
+function renderTodayFilters(){
+  const gs=document.getElementById("todayGenre"),as=document.getElementById("todayAuthor");if(!gs||!as)return;
+  const oldG=gs.value,oldA=as.value;
+  const genres=[...new Set(books.map(b=>b.genere).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it"));
+  const authors=[...new Set(books.map(b=>b.autore).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"it"));
+  gs.innerHTML='<option value="">Tutte le categorie</option>'+genres.map(g=>`<option value="${esc(g)}">${esc(g)}</option>`).join("");
+  as.innerHTML='<option value="">Tutti gli autori</option>'+authors.map(a=>`<option value="${esc(a)}">${esc(a)}</option>`).join("");
+  if(genres.includes(oldG))gs.value=oldG;if(authors.includes(oldA))as.value=oldA;
+}
+function suggestToday(){
+  let candidates=getTodayCandidates();
+  const out=document.getElementById("todaySuggestion");
+  if(!candidates.length){out.innerHTML='<div class="empty" style="padding:18px 8px"><div class="empty-ico" style="font-size:30px">🔍</div><p>Nessun libro corrisponde ai criteri scelti.</p></div>';return;}
+  if(candidates.length>1)candidates=candidates.filter(b=>b.id!==todayLastId);
+  const chosen=candidates[Math.floor(Math.random()*candidates.length)];todayLastId=chosen.id;
+  out.innerHTML='<div class="flabel" style="margin-bottom:6px">Il suggerimento di oggi</div>'+bookCardHtml(chosen)+'<button class="btn-sm" style="width:100%" onclick="suggestToday()">🔄 Un altro suggerimento</button>';
+}
+function normalizeSearchText(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");}
+function getTodayCandidates(){
+  const genre=document.getElementById("todayGenre").value,author=document.getElementById("todayAuthor").value,status=document.getElementById("todayStatus").value;
+  const words=normalizeSearchText(document.getElementById("todayKeywords").value).split(/\s+/).filter(Boolean);
+  return books.filter(b=>(!genre||b.genere===genre)&&(!author||b.autore===author)&&(!status||b.stato===status)&&words.every(w=>normalizeSearchText(b.trama||"").includes(w)));
+}
+function showTodayResults(){
+  const list=getTodayCandidates(),body=document.getElementById("catalogBody");body.hidden=false;
+  const header=body.previousElementSibling;header.classList.add("open");header.querySelector(".stg-arr")?.classList.add("open");
+  document.getElementById("libList").innerHTML=list.length?list.map(bookCardHtml).join(""):'<div class="empty"><div class="empty-ico">🔍</div><p>Nessun libro corrisponde ai criteri scelti.</p></div>';
+  body.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 // ── DETTAGLIO ──
 function openBook(id){
   const b=books.find(x=>x.id===id);if(!b)return;currentBookId=id;
   const st=STATI[b.stato]||STATI.daleggere;
-  const cover=b.cover?`<img src="${esc(b.cover)}" alt="" style="width:74px;height:104px;object-fit:cover;border-radius:8px;border:1px solid var(--border)">`:`<div style="font-size:54px">${GENERI[b.genere]||"📚"}</div>`;
+  const cover=genreCoverHtml(b,true);
   document.getElementById("bookModalBody").innerHTML=`
     <div style="display:flex;gap:15px;margin-bottom:16px;align-items:center">${cover}
       <div style="flex:1;min-width:0">
@@ -730,15 +851,21 @@ function openBook(id){
         <div style="margin-top:6px">${starsHtml(b.voto)||'<span style="font-size:.75rem;color:var(--text3)">Nessun voto</span>'}</div>
       </div></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;font-size:.82rem">
-      <div style="background:var(--card2);border-radius:10px;padding:9px 11px"><div style="font-size:.68rem;color:var(--text3)">Genere</div>${GENERI[b.genere]||"📚"} ${esc(b.genere||"—")}</div>
+      <div style="background:var(--card2);border-radius:10px;padding:9px 11px"><div style="font-size:.68rem;color:var(--text3)">Genere</div><span class="genre-dot" style="--genre-color:${GENERE_COLORI[b.genere]||GENERE_COLORI.Altro}"></span>${GENERI[b.genere]||"📚"} ${esc(b.genere||"—")}</div>
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px"><div style="font-size:.68rem;color:var(--text3)">Stato</div>${st.e} ${st.l}</div>
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">👤 Letto da</div>${(b.lettoDa||[]).length?b.lettoDa.map(esc).join(", "):"Nessuno"}</div>
       <div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">Posizione</div>${b.luogoNome?esc(b.luogoNome)+(b.ripiano?" · "+esc(b.ripiano):""):"—"}</div>
+      ${b.trama?`<div class="plot-box" style="grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3);margin-bottom:4px">📜 TRAMA</div>${esc(b.trama)}<br><span class="source-tag">Fonte: ${esc(b.tramaFonte||"manuale")}</span></div>`:""}
       ${b.note?`<div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1"><div style="font-size:.68rem;color:var(--text3)">Note</div>${esc(b.note)}</div>`:""}
       ${b.prestito?`<div style="background:var(--card2);border-radius:10px;padding:9px 11px;grid-column:1/-1;border:1px solid var(--yellow)"><div style="font-size:.68rem;color:var(--text3)">🤝 In prestito a</div><strong>${esc(b.prestito.a)}</strong> dal ${new Date(b.prestito.dal).toLocaleDateString("it-IT")}</div>`:""}
     </div>
     <div style="display:flex;gap:8px;margin-bottom:9px">
       ${Object.entries(STATI).map(([k,s])=>`<button class="btn-s" style="flex:1;font-size:.78rem;${b.stato===k?"border-color:var(--accent);color:var(--accent)":""}" onclick="setStato('${k}')">${s.e} ${s.l}</button>`).join("")}
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:9px">
+      <button class="btn-s" style="flex:1" onclick="editBookPlot()">📜 ${b.trama?"Modifica":"Aggiungi"} trama</button>
+      <button class="btn-s" style="flex:1" onclick="openGenrePicker('book')">${GENERI[b.genere]||"📚"} Categoria</button>
+      <button class="btn-s" style="flex:1" onclick="openQuickLocation()">📍 Posizione</button>
     </div>
     <div style="display:flex;gap:8px">
       ${b.prestito?`<button class="btn-s" style="flex:1" onclick="returnBook('${b.id}');closeBook()">↩️ Restituito</button>`:`<button class="btn-s" style="flex:1" onclick="openLoan('${b.id}')">🤝 Presta</button>`}
@@ -748,6 +875,7 @@ function openBook(id){
   document.getElementById("bookModal").classList.add("open");
 }
 function closeBook(){document.getElementById("bookModal").classList.remove("open");currentBookId=null;}
+function editBookPlot(){editBook();setTimeout(()=>{const x=document.getElementById("fTrama");x.scrollIntoView({behavior:"smooth",block:"center"});x.focus();},180);}
 function setStato(s){const b=books.find(x=>x.id===currentBookId);if(!b)return;b.stato=s;saveB();openBook(b.id);refreshView();}
 function deleteBook(){books=books.filter(x=>x.id!==currentBookId);saveB();closeBook();refreshView();showToast("🗑️ Libro eliminato");}
 function refreshView(){const sec=document.querySelector(".section.active");const s=sec?sec.id.replace("sec-",""):"home";if(s==="home")renderHome();else if(s==="libri")renderLibri();else if(s==="prestiti")renderPrestiti();}
@@ -767,11 +895,10 @@ function renderPrestiti(){
   const list=books.filter(b=>b.prestito);
   document.getElementById("prestitiList").innerHTML=list.length?list.map(b=>{
     const giorni=Math.floor((Date.now()-b.prestito.dal)/86400000);
-    return`<div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:13px;margin-bottom:9px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px">
-      <div class="book-cover">${b.cover?`<img src="${esc(b.cover)}">`:(GENERI[b.genere]||"📚")}</div>
-      <div style="flex:1;min-width:0"><div style="font-weight:600;font-size:.92rem">${esc(b.titolo)}</div>
-      <div style="font-size:.78rem;color:var(--text2)">🤝 ${esc(b.prestito.a)} · da ${giorni===0?"oggi":giorni+(giorni===1?" giorno":" giorni")}</div></div>
-      <button class="btn-s" onclick="returnBook('${b.id}')">↩️ Rientrato</button>
+    return`<div class="prod-card compact" style="background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);display:flex;align-items:center;gap:8px">
+      ${genreCoverHtml(b,false)}
+      <div class="compact-main"><strong>${esc(b.titolo)}</strong><span style="color:var(--text2)"> — ${esc(b.prestito.a)}</span></div>
+      <button class="btn-sm" onclick="returnBook('${b.id}')">↩️ ${giorni===0?"oggi":giorni+"g"}</button>
     </div>`;}).join(""):'<div class="empty"><div class="empty-ico">🤝</div><p>Nessun libro in prestito.<br>Apri un libro e tocca 🤝 Presta.</p></div>';
 }
 
@@ -779,6 +906,33 @@ function renderPrestiti(){
 function buildSelects(){
   document.getElementById("fGenere").innerHTML=Object.keys(GENERI).map(g=>`<option value="${esc(g)}">${GENERI[g]} ${esc(g)}</option>`).join("");
   document.getElementById("fStato").innerHTML=Object.entries(STATI).map(([k,s])=>`<option value="${k}">${s.e} ${s.l}</option>`).join("");
+  renderGenreButton();
+}
+function renderGenreButton(){const s=document.getElementById("fGenere"),b=document.getElementById("fGenereBtn");if(!s||!b)return;const g=s.value||"Da classificare";b.innerHTML=genreCoverHtml({genere:g},false)+`<span style="flex:1">${esc(g)}</span><span>›</span>`;}
+let genrePickerMode="form";
+function openGenrePicker(mode){genrePickerMode=mode||"form";document.getElementById("genrePickerList").innerHTML=Object.keys(GENERI).map(g=>`<div class="genre-picker-row" onclick="chooseGenre('${esc(g)}')">${genreCoverHtml({genere:g},false)}<strong>${esc(g)}</strong></div>`).join("");document.getElementById("genreModal").classList.add("open");}
+function closeGenrePicker(){document.getElementById("genreModal").classList.remove("open");}
+function chooseGenre(g){
+  if(genrePickerMode==="book"){
+    const b=books.find(x=>x.id===currentBookId);if(b){b.genere=g;saveB();refreshView();openBook(b.id);}
+  }else{document.getElementById("fGenere").value=g;renderGenreButton();}
+  closeGenrePicker();
+}
+function openQuickLocation(){
+  const b=books.find(x=>x.id===currentBookId);if(!b)return;
+  const s=document.getElementById("quickLuogo");s.innerHTML='<option value="">Senza posizione</option>'+settings.luoghi.map(l=>`<option value="${esc(l.id)}">${esc((l.stanza?l.stanza+" · ":"")+l.nome)}</option>`).join("");
+  s.value=b.luogoId||"";fillQuickShelves(b.ripiano||"");document.getElementById("quickLocationModal").classList.add("open");
+}
+function fillQuickShelves(selected){
+  const id=document.getElementById("quickLuogo").value,l=settings.luoghi.find(x=>x.id===id),r=document.getElementById("quickRipiano");
+  r.innerHTML='<option value="">Nessuno scaffale</option>'+((l&&l.ripiani)||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  if(selected)r.value=selected;
+}
+function closeQuickLocation(){document.getElementById("quickLocationModal").classList.remove("open");}
+function saveQuickLocation(){
+  const b=books.find(x=>x.id===currentBookId);if(!b)return;const id=document.getElementById("quickLuogo").value,l=settings.luoghi.find(x=>x.id===id);
+  b.luogoId=l?l.id:null;b.luogoNome=l?l.nome:null;b.ripiano=l?(document.getElementById("quickRipiano").value||null):null;
+  saveB();closeQuickLocation();refreshView();openBook(b.id);showToast("✅ Posizione aggiornata");
 }
 function renderFLettori(){
   document.getElementById("fLettori").innerHTML=(settings.lettori||[]).map(n=>
@@ -792,11 +946,14 @@ function toggleFLettore(n){
 function renderVotoStars(){
   document.getElementById("fVotoStars").innerHTML=[1,2,3,4,5].map(i=>`<span class="${formVoto>=i?"on":""}" onclick="formVoto=${i}===formVoto?0:${i};renderVotoStars()" style="color:var(--yellow)">★</span>`).join("");
 }
-function clearForm(){
+function clearForm(keepLoc){
+  const oldLoc=locPickerLuogo,oldShelf=locPickerRipiano;
   currentBookId=null;formVoto=0;formLettoDa=[];window._formCover=null;
-  ["fIsbn","fTitolo","fAutore","fAnno","fNote"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("fGenere").value="Romanzo";document.getElementById("fStato").value="daleggere";
-  locPickerLuogo=null;locPickerRipiano=null;
+  ["fIsbn","fTitolo","fAutore","fAnno","fNote","fTrama"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("tramaSource").textContent="Fonte: non disponibile";
+  document.getElementById("fGenere").value="Da classificare";document.getElementById("fStato").value="daleggere";
+  renderGenreButton();
+  locPickerLuogo=keepLoc?oldLoc:null;locPickerRipiano=keepLoc?oldShelf:null;
   renderLocPicker();renderVotoStars();renderFLettori();
   document.getElementById("formTitle").textContent="✨ Aggiungi Libro";
 }
@@ -804,66 +961,269 @@ function editBook(){
   const b=books.find(x=>x.id===currentBookId);if(!b)return;
   closeBook();currentBookId=b.id;
   document.getElementById("fIsbn").value=b.isbn||"";document.getElementById("fTitolo").value=b.titolo;
-  document.getElementById("fAutore").value=b.autore||"";document.getElementById("fGenere").value=b.genere||"Altro";
+  document.getElementById("fAutore").value=b.autore||"";
+  const genreSelect=document.getElementById("fGenere"),savedGenre=b.genere||"Altro";
+  if(![...genreSelect.options].some(o=>o.value===savedGenre))genreSelect.add(new Option("📚 "+savedGenre,savedGenre));
+  genreSelect.value=savedGenre;
+  renderGenreButton();
   document.getElementById("fAnno").value=b.anno||"";document.getElementById("fStato").value=b.stato||"daleggere";
   document.getElementById("fNote").value=b.note||"";formVoto=b.voto||0;formLettoDa=[...(b.lettoDa||[])];window._formCover=b.cover||null;
+  document.getElementById("fTrama").value=b.trama||"";document.getElementById("tramaSource").textContent="Fonte: "+(b.tramaFonte||"manuale");
   locPickerLuogo=b.luogoId;locPickerRipiano=b.ripiano;
   renderLocPicker();renderVotoStars();renderFLettori();
   document.getElementById("formTitle").textContent="✏️ Modifica Libro";
   goTo("add");document.getElementById("nav-add").classList.add("on");
 }
-function saveBook(){
+function saveBook(forceDuplicate){
   const titolo=document.getElementById("fTitolo").value.trim();
   if(!titolo){showToast("⚠️ Inserisci il titolo","var(--red)");return;}
+  const cleanIsbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
+  const duplicate=!currentBookId&&cleanIsbn&&books.find(x=>String(x.isbn||"").replace(/[^0-9Xx]/g,"")===cleanIsbn);
+  if(duplicate&&!forceDuplicate){
+    const where=duplicate.luogoNome?(duplicate.luogoNome+(duplicate.ripiano?" · "+duplicate.ripiano:"")):"posizione non indicata";
+    askConfirm("Questo libro è già presente: “"+duplicate.titolo+"”. Si trova in "+where+". Vuoi registrare una seconda copia?",()=>saveBook(true));return;
+  }
   const luogo=settings.luoghi.find(l=>l.id===locPickerLuogo)||null;
   const b={titolo,autore:document.getElementById("fAutore").value.trim(),
     genere:document.getElementById("fGenere").value,anno:parseInt(document.getElementById("fAnno").value)||null,
     stato:document.getElementById("fStato").value,voto:formVoto,isbn:document.getElementById("fIsbn").value.trim(),
     cover:window._formCover||null,lettoDa:[...formLettoDa],luogoId:luogo?.id||null,luogoNome:luogo?.nome||null,
-    ripiano:locPickerRipiano||null,note:document.getElementById("fNote").value.trim()};
+    ripiano:locPickerRipiano||null,note:document.getElementById("fNote").value.trim(),
+    trama:document.getElementById("fTrama").value.trim(),tramaFonte:document.getElementById("tramaSource").textContent.replace("Fonte: ","")};
   if(currentBookId){
     const idx=books.findIndex(x=>x.id===currentBookId);
     if(idx>=0)books[idx]={...books[idx],...b};
     currentBookId=null;
   }else{books.unshift({id:genId(),addedAt:Date.now(),prestito:null,...b});}
-  saveB();showToast("✅ Libro salvato!");clearForm();goTo("home");
+  saveB();showToast("✅ Libro salvato!");
+  const again=document.getElementById("multiScan").checked,keep=document.getElementById("keepLocation").checked;
+  clearForm(again&&keep);
+  if(again){goTo("add");setTimeout(openScanner,350);}else goTo("home");
 }
 
 // ── ISBN LOOKUP ──
-async function isbnLookup(){
+function suggestGenre(b){
+  const author=normalizeBookKey((b.authors||[]).join(" ")),meta=normalizeBookKey([b.title,b.subtitle,(b.categories||[]).join(" "),(b.subjects||[]).join(" ")].join(" "));
+  const ancient=["omero","hesiod","eschilo","sofocle","euripide","aristofane","erodoto","tucidide","platone","aristotele","cicerone","virgilio","orazio","ovidio","seneca","petronio","plutarco","tacito","svetonio","apuleio","marco aurelio","lucrezio","catullo","giovenale"];
+  if(ancient.some(n=>author.includes(normalizeBookKey(n))))return"Classici";
+  if(/drama|theatre|teatro|plays|traged|commedi/.test(meta)||/shakespeare|moliere|goldoni|pirandello|cechov|ibsen/.test(author))return"Teatro";
+  if(/noir/.test(meta))return"Noir";
+  if(/detective|mystery|crime|polizies|gialli/.test(meta))return"Giallo/Poliziesco";
+  if(/thriller|suspense/.test(meta))return"Thriller";
+  if(/sciencefiction|fantascienza/.test(meta))return"Fantascienza";
+  if(/fantasy/.test(meta))return"Fantasy";
+  if(/horror/.test(meta))return"Horror";
+  if(/romance|lovestories|romanzorosa/.test(meta))return"Romance";
+  if(/biograph|autobiograph|memoir|memorie/.test(meta))return"Biografia/Memorie";
+  if(/history|storia/.test(meta))return"Storico";
+  if(/poetry|poesia/.test(meta))return"Poesia";
+  if(/comic|graphic novel|fumett/.test(meta))return"Fumetti/Graphic novel";
+  if(/juvenile|children|ragazzi|bambini/.test(meta))return"Bambini/Ragazzi";
+  if(/essay|saggi|philosophy|science|socialscience/.test(meta))return"Saggio";
+  if(/fiction|romanzo|narrativa/.test(meta))return"Romanzo";
+  return"Da classificare";
+}
+async function isbnLookup(skipDuplicate){
   const isbn=document.getElementById("fIsbn").value.replace(/[^0-9Xx]/g,"");
   if(!isbn){showToast("⚠️ Inserisci un ISBN","var(--red)");return;}
+  const duplicate=!currentBookId&&books.find(x=>String(x.isbn||"").replace(/[^0-9Xx]/g,"")===isbn);
+  if(duplicate&&!skipDuplicate){
+    const where=duplicate.luogoNome?(duplicate.luogoNome+(duplicate.ripiano?" · "+duplicate.ripiano:"")):"posizione non indicata";
+    askConfirm("COPIA GIÀ PRESENTE: “"+duplicate.titolo+"”. Posizione: "+where+". Vuoi continuare per registrare una seconda copia?",()=>isbnLookup(true));return;
+  }
   showToast("🔎 Cerco l'ISBN...","var(--accent2)");
-  // 1) Google Books (ottima copertura italiana)
-  try{
-    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q=isbn:"+isbn);
-    const d=await r.json();
-    if(d.totalItems>0&&d.items?.[0]?.volumeInfo){
-      const v=d.items[0].volumeInfo;
-      document.getElementById("fTitolo").value=v.title+(v.subtitle?". "+v.subtitle:"");
-      document.getElementById("fAutore").value=(v.authors||[]).join(", ");
-      const y=parseInt((v.publishedDate||"").slice(0,4));
-      if(y)document.getElementById("fAnno").value=y;
-      const img=v.imageLinks?.thumbnail||v.imageLinks?.smallThumbnail||null;
-      window._formCover=img?img.replace("http://","https://"):null;
-      showToast("✅ Trovato: "+v.title.substring(0,30));
-      return;
-    }
-  }catch(e){}
-  // 2) Open Library (riserva)
-  try{
-    const res=await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:"+isbn+"&format=json&jscmd=data");
-    const data=await res.json();
-    const book=data["ISBN:"+isbn];
-    if(!book){showToast("❌ ISBN non trovato nei database","var(--red)");return;}
-    document.getElementById("fTitolo").value=book.title||"";
-    document.getElementById("fAutore").value=(book.authors||[]).map(a=>a.name).join(", ");
-    const y=parseInt((book.publish_date||"").match(/\d{4}/)?.[0]);
+  const fill=(b)=>{
+    if(!b?.title)return false;
+    document.getElementById("fTitolo").value=b.title+(b.subtitle?". "+b.subtitle:"");
+    document.getElementById("fAutore").value=(b.authors||[]).join(", ");
+    const y=parseInt(String(b.date||"").match(/\d{4}/)?.[0]);
     if(y)document.getElementById("fAnno").value=y;
-    window._formCover=book.cover?.medium||book.cover?.small||null;
-    showToast("✅ Trovato: "+(book.title||"").substring(0,30));
-  }catch(e){showToast("❌ Errore di rete","var(--red)");}
+    document.getElementById("fGenere").value=suggestGenre(b);renderGenreButton();
+    if(b.description){document.getElementById("fTrama").value=cleanPlot(b.description);document.getElementById("tramaSource").textContent="Fonte: "+(b.source||"Internet");}
+    showToast("✅ Trovato: "+b.title.substring(0,30));
+    return true;
+  };
+  // 1) Catalogo ufficiale del Servizio Bibliotecario Nazionale, tramite Apps Script.
+  const cfg=getSyncCfg();
+  let sbnFound=false;
+  if(cfg.url){
+    try{
+      const r=await fetch(cfg.url+"?action=sbnIsbn&isbn="+encodeURIComponent(isbn)+"&pin="+encodeURIComponent(cfg.pin||""));
+      const d=await r.json();
+      if(d.ok&&d.result&&fill(d.result))sbnFound=true;
+    }catch(e){}
+  }
+  // Google Books: ricerca ISBN dedicata e, se non indicizzato così, ricerca libera del numero.
+  for(const query of ["isbn:"+isbn,'"'+isbn+'"']){
+    try{
+      const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(query)+"&maxResults=5");
+      const d=await r.json();
+      const item=(d.items||[]).find(x=>x.volumeInfo?.title);
+      if(item){const v=item.volumeInfo;if(fill({title:v.title,subtitle:v.subtitle,authors:v.authors,date:v.publishedDate,description:v.description,categories:v.categories||[],source:"Google Books"}))return;}
+    }catch(e){}
+  }
+  // Open Library: prima scheda ISBN, poi indice di ricerca (più ampio).
+  try{
+    const r=await fetch("https://openlibrary.org/api/books?bibkeys=ISBN:"+encodeURIComponent(isbn)+"&format=json&jscmd=data");
+    const b=(await r.json())["ISBN:"+isbn];
+    if(b&&fill({title:b.title,authors:(b.authors||[]).map(a=>a.name),date:b.publish_date,subjects:(b.subjects||[]).map(x=>x.name||x),source:"Open Library"}))return;
+  }catch(e){}
+  try{
+    const r=await fetch("https://openlibrary.org/search.json?isbn="+encodeURIComponent(isbn)+"&limit=5&fields=title,author_name,first_publish_year,subject");
+    const d=await r.json(),b=(d.docs||[]).find(x=>x.title);
+    if(b&&fill({title:b.title,authors:b.author_name,date:b.first_publish_year,subjects:b.subject||[],source:"Open Library"}))return;
+  }catch(e){}
+  if(sbnFound)return;
+  showToast("⚠️ ISBN letto, ma scheda non presente: inserisci titolo e autore","var(--yellow)");
 }
+
+// ── RICERCA PER TITOLO E AUTORE ──
+let _bookSearchResults=[];
+function parseBookDictation(text){
+  const cleaned=String(text||"").replace(/[.,;:]+/g," ").replace(/\s+/g," ").trim();
+  let m=cleaned.match(/(?:^|\s)titolo\s+(.+?)\s+(?:autore|scritto\s+da|di)\s+(.+)$/i);
+  if(m)return{title:m[1].trim(),author:m[2].trim()};
+  m=cleaned.match(/(?:^|\s)autore\s+(.+?)\s+titolo\s+(.+)$/i);
+  if(m)return{title:m[2].trim(),author:m[1].trim()};
+  m=cleaned.match(/^(.+?)\s+(?:scritto\s+da|di)\s+(.+)$/i);
+  if(m)return{title:m[1].replace(/^titolo\s+/i,"").trim(),author:m[2].trim()};
+  return{title:cleaned.replace(/^titolo\s+/i,"").trim(),author:""};
+}
+function startBookDictation(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast("⚠️ Dettatura non supportata: usa Chrome aggiornato","var(--red)");return;}
+  const btn=document.getElementById("voiceBookBtn"),rec=new SR();
+  rec.lang="it-IT";rec.interimResults=false;rec.maxAlternatives=1;
+  btn.classList.add("listening");btn.textContent="🎙️ Sto ascoltando...";
+  rec.onresult=e=>{
+    const said=e.results[0][0].transcript,parts=parseBookDictation(said);
+    document.getElementById("fTitolo").value=parts.title;
+    document.getElementById("fAutore").value=parts.author;
+    showToast(parts.author?"✅ Titolo e autore riconosciuti":"⚠️ Autore non riconosciuto: puoi correggere i campi","var(--accent2)");
+  };
+  rec.onerror=e=>showToast("❌ Dettatura non riuscita: "+(e.error||"errore"),"var(--red)");
+  rec.onend=()=>{btn.classList.remove("listening");btn.textContent="🎙️ Detta titolo e autore";};
+  try{rec.start();}catch(e){rec.onend();showToast("❌ Impossibile avviare il microfono","var(--red)");}
+}
+function normalizeBookKey(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]/g,"");}
+async function titleAuthorLookup(){
+  const title=document.getElementById("fTitolo").value.trim(),author=document.getElementById("fAutore").value.trim();
+  if(!title){showToast("⚠️ Inserisci o detta il titolo","var(--red)");return;}
+  showToast("🔎 Cerco titolo e autore...","var(--accent2)");
+  const found=[];
+  const gQueries=["intitle:"+title+(author?" inauthor:"+author:""),"intitle:"+title,title+(author?" "+author:"")];
+  for(const gQuery of [...new Set(gQueries)])try{
+    const r=await fetch("https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(gQuery)+"&maxResults=10"),d=await r.json();
+    (d.items||[]).forEach(x=>{const v=x.volumeInfo||{},ids=v.industryIdentifiers||[];
+      found.push({title:v.title||"",subtitle:v.subtitle||"",authors:v.authors||[],date:v.publishedDate||"",isbn:(ids.find(i=>i.type==="ISBN_13")||ids.find(i=>i.type==="ISBN_10")||{}).identifier||"",description:v.description||"",categories:v.categories||[],source:"Google Books"});
+    });
+    if(found.length>=8)break;
+  }catch(e){}
+  const olQueries=["title="+encodeURIComponent(title)+(author?"&author="+encodeURIComponent(author):""),"title="+encodeURIComponent(title)];
+  for(const query of [...new Set(olQueries)])try{
+    const url="https://openlibrary.org/search.json?"+query+"&limit=10&fields=title,author_name,first_publish_year,isbn,subject";
+    const r=await fetch(url),d=await r.json();(d.docs||[]).forEach(v=>found.push({title:v.title||"",authors:v.author_name||[],date:v.first_publish_year||"",isbn:(v.isbn||[]).find(x=>String(x).length===13)||(v.isbn||[])[0]||"",subjects:v.subject||[],source:"Open Library"}));
+    if(found.length>=12)break;
+  }catch(e){}
+  const seen=new Set();_bookSearchResults=found.filter(x=>{if(!x.title)return false;const k=normalizeBookKey(x.title)+"|"+normalizeBookKey((x.authors||[])[0]);if(seen.has(k))return false;seen.add(k);return true;}).slice(0,12);
+  if(!_bookSearchResults.length){showToast("⚠️ Nessun libro trovato: controlla titolo e autore","var(--yellow)");return;}
+  document.getElementById("searchBookResults").innerHTML=_bookSearchResults.map((b,i)=>{b.suggestedGenre=suggestGenre(b);return`<div class="search-result" onclick="chooseBookResult(${i})">
+    ${genreCoverHtml({genere:b.suggestedGenre},false)}
+    <div style="flex:1;min-width:0"><div style="font-weight:600">${esc(b.title)}${b.subtitle?": "+esc(b.subtitle):""}</div><div style="font-size:.78rem;color:var(--text2)">${esc((b.authors||[]).join(", ")||"Autore non indicato")}${b.date?" · "+esc(String(b.date).slice(0,4)):""}</div><div style="font-size:.7rem;color:var(--text3)">${esc(b.source)} · ${esc(b.suggestedGenre)}${b.isbn?" · ISBN "+esc(b.isbn):""}</div></div>
+  </div>`}).join("");
+  document.getElementById("searchBookModal").classList.add("open");
+}
+function closeBookSearch(){document.getElementById("searchBookModal").classList.remove("open");}
+function chooseBookResult(i){
+  const b=_bookSearchResults[i];if(!b)return;
+  document.getElementById("fTitolo").value=b.title+(b.subtitle?": "+b.subtitle:"");
+  document.getElementById("fAutore").value=(b.authors||[]).join(", ");
+  if(b.date)document.getElementById("fAnno").value=String(b.date).match(/\d{4}/)?.[0]||"";
+  if(b.isbn)document.getElementById("fIsbn").value=b.isbn;
+  document.getElementById("fGenere").value=b.suggestedGenre||suggestGenre(b);renderGenreButton();
+  if(b.description){document.getElementById("fTrama").value=cleanPlot(b.description);document.getElementById("tramaSource").textContent="Fonte: "+b.source;}
+  closeBookSearch();
+  const duplicate=b.isbn&&books.find(x=>String(x.isbn||"").replace(/[^0-9Xx]/g,"")===String(b.isbn).replace(/[^0-9Xx]/g,""));
+  if(duplicate){const where=duplicate.luogoNome?(duplicate.luogoNome+(duplicate.ripiano?" · "+duplicate.ripiano:"")):"posizione non indicata";showToast("⚠️ Copia già presente: "+where,"var(--yellow)");}
+  else showToast("✅ Libro selezionato");
+}
+function cleanPlot(value){
+  const raw=typeof value==="object"?(value.value||""):String(value||"");
+  const el=document.createElement("div");el.innerHTML=raw;
+  return (el.textContent||"").replace(/\s+/g," ").trim();
+}
+async function searchPlot(silent){
+  const titolo=document.getElementById("fTitolo").value.trim(),autore=document.getElementById("fAutore").value.trim();
+  if(!titolo||!autore){if(!silent)showToast("⚠️ Per la trama servono titolo e autore","var(--yellow)");return;}
+  const key=localStorage.getItem("gemini_api_key")||"",cfg=getSyncCfg();
+  if(!key){if(!silent)showToast("⚠️ Salva prima la chiave Gemini nelle Impostazioni","var(--red)");return;}
+  if(!cfg.url||!cfg.pin){if(!silent)showToast("⚠️ Configura URL e PIN della sincronizzazione","var(--red)");return;}
+  if(!silent)showToast("🔎 Gemini cerca il libro su Google...","var(--accent2)");
+  try{
+    const res=await fetch(cfg.url,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:"aiPlot",pin:cfg.pin,key,title:titolo,author:autore})});
+    const data=await res.json();if(!data.ok)throw new Error(data.error||"Errore sconosciuto");
+    if(!data.result?.text){if(!silent)showToast("⚠️ Google non ha identificato con certezza questo libro","var(--yellow)");return;}
+    const text=cleanPlot(data.result.text);document.getElementById("fTrama").value=text;
+    document.getElementById("tramaSource").textContent="Fonte: Gemini con Ricerca Google";
+    if(!silent)showToast("✅ Trama trovata ("+text.length+" caratteri)");
+  }catch(e){if(!silent)showToast("❌ Ricerca trama fallita: "+e.message,"var(--red)");}
+}
+
+// ── STATISTICHE ──
+let _statsPlaces=[];
+function renderStats(){
+  const p=document.getElementById("statsPanel");if(!p)return;
+  const count=k=>books.filter(k).length,total=books.length;
+  const now=Date.now(),year=new Date().getFullYear(),rated=books.filter(b=>Number(b.voto)>0),avg=rated.length?(rated.reduce((s,b)=>s+Number(b.voto),0)/rated.length).toFixed(1):'—';
+  const summary=[['📚 Totali',total],['✅ Letti',count(b=>b.stato==='letto')],['🔖 Da leggere',count(b=>b.stato==='daleggere')],['📖 In lettura',count(b=>b.stato==='inlettura')],['🤝 In prestito',count(b=>b.prestito)],['⭐ Voto medio',avg],['🆕 Ultimi 30 giorni',count(b=>b.addedAt&&now-b.addedAt<=2592000000)],['📅 Aggiunti nel '+year,count(b=>b.addedAt&&new Date(b.addedAt).getFullYear()===year)],['📜 Senza trama',count(b=>!b.trama)],['📍 Senza posizione',count(b=>!b.luogoId)],['🔢 Senza ISBN',count(b=>!b.isbn)],['❔ Da classificare',count(b=>!b.genere||b.genere==='Da classificare')]];
+  const byGenre={};books.forEach(b=>byGenre[b.genere||'Da classificare']=(byGenre[b.genere||'Da classificare']||0)+1);
+  const maxG=Math.max(1,...Object.values(byGenre));
+  const byAuthor={};books.forEach(b=>{if(b.autore)byAuthor[b.autore]=(byAuthor[b.autore]||0)+1;});
+  const topAuthors=Object.entries(byAuthor).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'it')).slice(0,10),maxA=Math.max(1,...topAuthors.map(x=>x[1]));
+  const byPlace={};books.forEach(b=>{const x=b.luogoNome||'Senza posizione';byPlace[x]=(byPlace[x]||0)+1;});_statsPlaces=Object.entries(byPlace).sort((a,b)=>b[1]-a[1]);const maxP=Math.max(1,...Object.values(byPlace));
+  p.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:13px">${summary.map(x=>`<div class="card2" style="padding:9px"><strong>${x[1]}</strong><div style="font-size:.7rem;color:var(--text2)">${x[0]}</div></div>`).join('')}</div>
+    <div class="flabel">Libri per categoria</div>${Object.entries(byGenre).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`<div class="stat-bar-row" onclick="openGenreBooks('${esc(g)}')"><span>${esc(g)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxG*100}%;background:${GENERE_COLORI[g]||GENERE_COLORI.Altro}"></div></div><strong>${n}</strong></div>`).join('')||'<div class="empty">Nessun dato</div>'}
+    <div class="flabel" style="margin-top:14px">Autori più presenti</div>${topAuthors.map(([a,n])=>`<div class="stat-bar-row"><span>${esc(a)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxA*100}%"></div></div><strong>${n}</strong></div>`).join('')||'<div class="empty">Nessun autore</div>'}
+    <div class="flabel" style="margin-top:14px">Distribuzione per libreria</div>${_statsPlaces.map(([a,n],i)=>`<div class="stat-bar-row" onclick="openPlaceBooks(${i})"><span>${esc(a)}</span><div class="stat-bar-track"><div class="stat-bar-fill" style="width:${n/maxP*100}%"></div></div><strong>${n}</strong></div>`).join('')}`;
+}
+function openGenreBooks(g){libGenFilter=g;goTo('libri');document.getElementById('catalogBody').hidden=false;}
+function openPlaceBooks(i){const name=_statsPlaces[i]?.[0];if(!name)return;goTo('libri');document.getElementById('catalogBody').hidden=false;document.getElementById('libSearch').value=name==='Senza posizione'?'':name;renderLibri();}
+
+// ── UNIFORMA AUTORI ──
+let _authorRows=[];
+function renderAuthorMaintenance(){
+  const p=document.getElementById('authorMaintenance');if(!p)return;const counts={};books.forEach(b=>{const a=(b.autore||'').trim();if(a)counts[a]=(counts[a]||0)+1;});
+  _authorRows=Object.entries(counts).sort((a,b)=>a[0].localeCompare(b[0],'it'));
+  p.innerHTML=_authorRows.length?_authorRows.map(([a,n],i)=>`<div class="maint-row"><div style="font-size:.76rem;overflow:hidden;text-overflow:ellipsis" title="${esc(a)}">${esc(a)} <span style="color:var(--text3)">(${n})</span></div><input id="authorFix${i}" value="${esc(a)}"><button class="btn-sm" onclick="renameAuthor(${i})">Applica</button></div>`).join(''):'<div class="empty">Nessun autore presente.</div>';
+}
+function renameAuthor(i){const old=_authorRows[i]?.[0],val=document.getElementById('authorFix'+i).value.trim();if(!old||!val||val===old)return;const n=books.filter(b=>b.autore===old).length;askConfirm(`Sostituire “${old}” con “${val}” in ${n} libr${n===1?'o':'i'}?`,()=>{books.forEach(b=>{if(b.autore===old)b.autore=val;});saveB();renderAuthorMaintenance();refreshView();showToast('✅ Autore uniformato');});}
+
+// ── INVENTARIO ──
+let inventoryTarget=null,inventoryScanned=new Map(),inventoryActive=false;
+function renderInventorySetup(){
+  const l=document.getElementById('inventoryLuogo');if(!l)return;const old=l.value;l.innerHTML='<option value="">Scegli libreria</option>'+settings.luoghi.map(x=>`<option value="${esc(x.id)}">${esc(x.nome)}</option>`).join('');if(settings.luoghi.some(x=>x.id===old))l.value=old;renderInventoryShelves();
+}
+function renderInventoryShelves(){const id=document.getElementById('inventoryLuogo')?.value,r=document.getElementById('inventoryRipiano'),old=r?.value,l=settings.luoghi.find(x=>x.id===id);if(!r)return;r.innerHTML='<option value="">Tutta la libreria</option>'+((l&&l.ripiani)||[]).map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');if((l?.ripiani||[]).includes(old))r.value=old;}
+function startInventory(){
+  const luogoId=document.getElementById('inventoryLuogo').value,ripiano=document.getElementById('inventoryRipiano').value,luogo=settings.luoghi.find(x=>x.id===luogoId);
+  if(!luogo){showToast('⚠️ Scegli prima una libreria','var(--red)');return;}
+  inventoryTarget={luogoId,luogoNome:luogo.nome,ripiano};inventoryScanned=new Map();inventoryActive=true;renderInventoryResults(false);openScanner('inventory');
+}
+function handleInventoryBarcode(code){
+  if(inventoryScanned.has(code))return;const matches=books.filter(b=>String(b.isbn||'').replace(/[^0-9Xx]/g,'')===code),book=matches[0]||null;
+  let type='unknown';if(book)type=book.luogoId===inventoryTarget.luogoId&&(!inventoryTarget.ripiano||book.ripiano===inventoryTarget.ripiano)?'correct':'wrong';
+  inventoryScanned.set(code,{code,book,type});renderInventoryResults(false);
+  document.getElementById('scanStatus').textContent=book?(type==='correct'?'✅ '+book.titolo:'⚠️ Altra posizione: '+book.titolo):'➕ ISBN non presente: '+code;
+}
+function inventoryExpected(){return books.filter(b=>b.luogoId===inventoryTarget?.luogoId&&(!inventoryTarget?.ripiano||b.ripiano===inventoryTarget.ripiano));}
+function renderInventoryResults(finished){
+  const p=document.getElementById('inventoryResults');if(!p||!inventoryTarget)return;const vals=[...inventoryScanned.values()],correct=vals.filter(x=>x.type==='correct'),wrong=vals.filter(x=>x.type==='wrong'),unknown=vals.filter(x=>x.type==='unknown'),seenIds=new Set(vals.filter(x=>x.book).map(x=>x.book.id)),expected=inventoryExpected(),unscannable=expected.filter(b=>!String(b.isbn||'').replace(/[^0-9Xx]/g,'')),missing=expected.filter(b=>String(b.isbn||'').replace(/[^0-9Xx]/g,'')&&!seenIds.has(b.id));
+  p.innerHTML=`<div class="card2" style="padding:9px;margin-bottom:8px"><strong>${finished?'Inventario terminato':'Scansione in corso'}</strong><div style="font-size:.73rem;color:var(--text2)">${esc(inventoryTarget.luogoNome)}${inventoryTarget.ripiano?' · '+esc(inventoryTarget.ripiano):''}</div><div style="font-size:.75rem;margin-top:5px">✅ ${correct.length} corretti · ⚠️ ${wrong.length} fuori posto · ➕ ${unknown.length} non registrati${finished?' · ❓ '+missing.length+' non trovati · 🔢 '+unscannable.length+' senza ISBN':''}</div></div>`+
+    wrong.map(x=>`<div class="inventory-line"><span style="flex:1">⚠️ ${esc(x.book.titolo)} <small>(${esc(x.book.luogoNome||'senza posizione')})</small></span><button class="btn-sm" onclick="moveInventoryBook('${x.book.id}')">Sposta qui</button></div>`).join('')+
+    unknown.map(x=>`<div class="inventory-line">➕ ISBN ${esc(x.code)} non presente</div>`).join('')+
+    (finished?missing.map(b=>`<div class="inventory-line">❓ Non trovato: ${esc(b.titolo)}</div>`).join('')+unscannable.map(b=>`<div class="inventory-line">🔢 Senza ISBN, controllo manuale: ${esc(b.titolo)}</div>`).join(''):'');
+}
+function moveInventoryBook(id){const b=books.find(x=>x.id===id);if(!b)return;askConfirm(`Spostare “${b.titolo}” in ${inventoryTarget.luogoNome}${inventoryTarget.ripiano?' · '+inventoryTarget.ripiano:''}?`,()=>{b.luogoId=inventoryTarget.luogoId;b.luogoNome=inventoryTarget.luogoNome;b.ripiano=inventoryTarget.ripiano||null;saveB();const row=[...inventoryScanned.values()].find(x=>x.book?.id===id);if(row)row.type='correct';renderInventoryResults(!inventoryActive);showToast('✅ Posizione aggiornata');});}
 function onBarcode(code){
   document.getElementById("fIsbn").value=code;
   showToast("📊 Codice letto: "+code);
@@ -871,8 +1231,9 @@ function onBarcode(code){
 }
 
 // ── SCANNER BARCODE ──
-let _scanStream=null,_scanFrame=null,_scanBusy=false;
-async function openScanner(){
+let _scanStream=null,_scanFrame=null,_scanBusy=false,_scannerMode='add',_lastInventoryCode='',_lastInventoryAt=0;
+async function openScanner(mode){
+  _scannerMode=mode||'add';document.getElementById('scanCloseBtn').textContent=_scannerMode==='inventory'?'✅ Termina inventario':'✕ Chiudi';
   if(!("BarcodeDetector" in window)){showToast("⚠️ Scanner non supportato: usa Chrome aggiornato","var(--red)");return;}
   document.getElementById("scanModal").classList.add("open");
   const status=document.getElementById("scanStatus");
@@ -897,9 +1258,9 @@ async function openScanner(){
         const codes=await det.detect(v);
         if(codes.length&&codes[0].rawValue){
           const c=codes[0].rawValue.replace(/\D/g,"");
-          if(navigator.vibrate)navigator.vibrate(100);
-          status.textContent="✅ ISBN letto: "+c;
-          closeScanner();onBarcode(c);return;
+          if(_scannerMode==='inventory'){
+            const now=Date.now();if(c!==_lastInventoryCode||now-_lastInventoryAt>1800){_lastInventoryCode=c;_lastInventoryAt=now;if(navigator.vibrate)navigator.vibrate(100);handleInventoryBarcode(c);}
+          }else{if(navigator.vibrate)navigator.vibrate(100);status.textContent="✅ ISBN letto: "+c;closeScanner();onBarcode(c);return;}
         }
       }catch(e){}
       finally{_scanBusy=false;}
@@ -913,6 +1274,8 @@ function closeScanner(){
   if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}
   const v=document.getElementById("scanVideo");if(v)v.srcObject=null;
   document.getElementById("scanModal").classList.remove("open");
+  if(_scannerMode==='inventory'&&inventoryActive){inventoryActive=false;renderInventoryResults(true);}
+  _scannerMode='add';
 }
 
 // ── LOC PICKER ──
@@ -986,6 +1349,13 @@ function exportData(){
   a.download="biblioteca_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();
   showToast("📤 Backup scaricato!");
 }
+function exportCsv(){
+  const cols=["Titolo","Autore","ISBN","Anno","Genere","Stato","Voto","Libreria","Scaffale","Letto da","In prestito a","Trama","Fonte trama","Note"];
+  const quote=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const rows=books.map(b=>[b.titolo,b.autore,b.isbn,b.anno,b.genere,STATI[b.stato]?.l||b.stato,b.voto,b.luogoNome,b.ripiano,(b.lettoDa||[]).join(", "),b.prestito?.a||"",b.trama,b.tramaFonte,b.note].map(quote).join(";"));
+  const blob=new Blob(["\ufeff"+cols.map(quote).join(";")+"\n"+rows.join("\n")],{type:"text/csv;charset=utf-8"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="catalogo_biblioteca_"+new Date().toISOString().slice(0,10)+".csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);showToast("📊 Catalogo CSV scaricato!");
+}
 function importData(input){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
@@ -1002,48 +1372,11 @@ function importData(input){
   reader.readAsText(file);input.value="";
 }
 
-// ── AI / FOTO COPERTINA ──
-const GEMINI_PROXY_DEFAULT="https://script.google.com/macros/s/AKfycbwRz-fCJCMY4bvWCu0qUc26KVCF4sfMyrmAzx5yTjDYPgcRT1gikTL4YJm-r-SisUrl/exec";
-function getProxyUrl(){return localStorage.getItem("gemini_proxy_url")||GEMINI_PROXY_DEFAULT;}
+// ── GEMINI PER LE TRAME ──
 function saveGeminiKey(){
   const val=document.getElementById("geminiKeyInput").value.trim();
   if(val)localStorage.setItem("gemini_api_key",val);
   showToast(val?"✅ Chiave salvata!":"⚠️ Campo vuoto","var(--accent2)");
-}
-function resizeImage(file,maxW,q){
-  return new Promise((res,rej)=>{
-    const img=new Image();
-    img.onload=()=>{const sc=Math.min(1,maxW/img.width);
-      const c=document.createElement("canvas");c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
-      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-      res(c.toDataURL("image/jpeg",q));};
-    img.onerror=()=>rej(new Error("Immagine non leggibile"));
-    img.src=URL.createObjectURL(file);
-  });
-}
-async function photoLookup(input){
-  const file=input.files[0];if(!file)return;input.value="";
-  const key=localStorage.getItem("gemini_api_key")||"";
-  if(!key){showToast("⚠️ Salva prima l'API key in Impostazioni","var(--red)");return;}
-  showToast("📷 Analizzo la copertina...","var(--accent2)");
-  try{
-    const big=await resizeImage(file,900,.82);
-    const thumb=await resizeImage(file,220,.7);
-    const prompt='Questa è la foto della copertina di un libro. Rispondi SOLO con un oggetto JSON, senza testo aggiuntivo né backtick, con questi campi: {"titolo":"...","autore":"...","anno":1234,"genere":"..."}. Il genere deve essere uno tra: '+Object.keys(GENERI).join(", ")+'. Usa null per i campi non leggibili.';
-    const res=await fetch(getProxyUrl(),{method:"POST",headers:{"Content-Type":"text/plain"},
-      body:JSON.stringify({key,prompt,image:{mime:"image/jpeg",data:big.split(",")[1]}})});
-    if(!res.ok)throw new Error("HTTP "+res.status);
-    const data=await res.json();
-    if(data.error)throw new Error(data.error);
-    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||"";
-    const j=JSON.parse(text.replace(/```json|```/g,"").trim());
-    if(j.titolo)document.getElementById("fTitolo").value=j.titolo;
-    if(j.autore)document.getElementById("fAutore").value=j.autore;
-    if(j.anno)document.getElementById("fAnno").value=j.anno;
-    if(j.genere&&GENERI[j.genere])document.getElementById("fGenere").value=j.genere;
-    window._formCover=thumb;
-    showToast(j.titolo?"✅ Riconosciuto: "+String(j.titolo).substring(0,28):"⚠️ Copertina poco leggibile","var(--green)");
-  }catch(e){showToast("❌ Riconoscimento fallito: "+e.message,"var(--red)");}
 }
 
 // ── SINCRONIZZAZIONE CLOUD ──
@@ -1115,7 +1448,34 @@ function scheduleAutoUpload(){
   _syncUpTimer=setTimeout(()=>syncUpload(true),4000);
 }
 
+// ── ASPETTO E PANNELLI IMPOSTAZIONI ──
+function toggleSetting(header){
+  const body=header.nextElementSibling;
+  const arrow=header.querySelector(".stg-arr");
+  const open=!body.classList.contains("open");
+  document.querySelectorAll("#sec-impostazioni .stg-hdr.open").forEach(x=>x.classList.remove("open"));
+  document.querySelectorAll("#sec-impostazioni .stg-body.open").forEach(x=>x.classList.remove("open"));
+  document.querySelectorAll("#sec-impostazioni .stg-arr.open").forEach(x=>x.classList.remove("open"));
+  if(open){header.classList.add("open");body.classList.add("open");if(arrow)arrow.classList.add("open");}
+}
+function collapseSettings(){
+  document.querySelectorAll("#sec-impostazioni .stg-hdr.open,#sec-impostazioni .stg-body.open,#sec-impostazioni .stg-arr.open").forEach(x=>x.classList.remove("open"));
+}
+function renderThemeSelection(){
+  document.querySelectorAll(".theme-opt").forEach(x=>x.classList.toggle("on",x.dataset.theme===(settings.theme||"sepia")));
+  const legend=document.getElementById("genreLegend");
+  if(legend)legend.innerHTML=Object.keys(GENERI).map(g=>`<div style="display:flex;align-items:center;gap:7px;font-size:.78rem">${genreCoverHtml({genere:g},false)}<span>${esc(g)}</span></div>`).join("");
+}
+function setTheme(name){
+  document.body.className=name;
+  settings.theme=name;saveS();renderThemeSelection();
+  showToast("🎨 Palette applicata");
+}
+
 // ── INIT ──
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("service-worker.js").catch(()=>{}));
+}
 load();buildSelects();clearForm();renderHome();
 (function(){const c=getSyncCfg();if(c.auto&&c.url&&c.pin)setTimeout(()=>syncDownload(false),1200);})();
 setTimeout(()=>{const s=document.getElementById("splash");s.style.opacity="0";setTimeout(()=>s.remove(),600);},1700);
